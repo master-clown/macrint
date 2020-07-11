@@ -1,0 +1,133 @@
+FINISH
+/CLEAR
+/TRIAD, off
+/LIGHT, ALL, , 0
+
+
+/PREP7
+
+PI = 4*atan(1)
+
+!!! PARAMETERS
+
+!! GEOMETRY
+w = 10
+l = 10
+crack_hlen = 1
+crack_angle = 9*PI/180
+cphi = cos(crack_angle)
+sphi = sin(crack_angle)
+crack_angle_eps = 2*PI / 180.0                        ! anglular deflection of crack edges of its axis
+
+crack_yoff      = tan(crack_angle_eps)*crack_hlen
+
+! left crack, right and left points
+rcrack_x0    = 1.1*crack_hlen
+rcrack_xr    = rcrack_x0 + crack_hlen
+rcrack_xl    = rcrack_x0 - crack_hlen
+
+! left crack, upper and "down" points
+rcrack_yu    = crack_yoff
+rcrack_yd    =-crack_yoff
+
+! right crack, right and left points
+lcrack_x0    =-1.1*crack_hlen
+lcrack_xr    = lcrack_x0 + crack_hlen*cphi                      
+lcrack_yr    =         0 + crack_hlen*sphi
+lcrack_xl    = lcrack_x0 - crack_hlen*cphi
+lcrack_yl    =         0 - crack_hlen*sphi
+
+! right crack,  upper and "down" points
+lcrack_xu = lcrack_x0 - sphi*crack_yoff
+lcrack_yu =         0 + cphi*crack_yoff
+lcrack_xd = lcrack_x0 + sphi*crack_yoff
+lcrack_yd =         0 - cphi*crack_yoff
+
+!! MESHING
+
+cline_el_size = 0.01                   ! crack line
+bline_el_size = 0.2                     ! border line
+crack_conc_rad = 0.04
+crack_conc_ratio = 0.75
+crack_conc_secnum = 22
+
+!! PHYSICS
+
+E = 2.1e+11
+nu = 0.3
+
+!!! GEOMETRY
+! plate
+K, 1, -w,-l
+K, 2,  w,-l
+K, 3,  w, l
+K, 4, -w, l
+
+A, 1, 2, 3, 4
+
+! left crack
+K, 5,  rcrack_xl,         0
+K, 6,  rcrack_x0, rcrack_yd
+K, 7,  rcrack_xr,         0
+K, 8,  rcrack_x0, rcrack_yu
+
+A, 5, 6, 7, 8
+
+ASBA, 1, 2
+
+! right crack
+K, 9,  lcrack_xl, lcrack_yl
+K,10,  lcrack_xd, lcrack_yd
+K,11,  lcrack_xr, lcrack_yr
+K,12,  lcrack_xu, lcrack_yu
+
+A, 9, 10, 11, 12
+
+ASBA, 3, 1
+
+!!! MESHING
+
+! Elements
+ET, 1, plane183
+MP, EX, 1, E
+MP, PRXY, 1, nu
+
+! Meshing size params
+!LESIZE, 1, l_el_size, , , space_ll_edge
+
+LSEL, S, LINE, , 1, 4
+    LESIZE, ALL, bline_el_size
+LSEL, INVE
+    LESIZE, ALL, cline_el_size
+LSEL, ALL
+
+!KSCON, 7, crack_conc_rad, 1, crack_conc_secnum, crack_conc_ratio
+
+AMESH, ALL
+
+
+! Boundary Conditions
+DL, 1,, ALL, 0.0
+SFL, 3, PRES, -1
+
+
+/SOLU
+
+SOLVE
+
+
+/POST1
+
+CSKP, 13, CART, 5, 6, 8
+RSYS, 13
+
+PATH, 'crack_pa', 5, 30, 60
+PPATH, 1, 402
+PPATH, 2, 903
+PPATH, 3, 902
+PPATH, 4, 901
+PPATH, 5, 900
+
+KCALC, 1, 1, 3, 0
+
+!PLESOL, S, X
