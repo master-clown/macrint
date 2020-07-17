@@ -1,4 +1,4 @@
-function sif_mat = crack_interact(cc_lst, cp_lst, cl_lst, bst_lst, sif_ind_lst)
+function [sif_mat, avg_tr] = crack_interact(cc_lst, cp_lst, cl_lst, bst_lst, sif_ind_lst)
 %
 %-Params:
 %	[n here: number of cracks]
@@ -20,13 +20,18 @@ function sif_mat = crack_interact(cc_lst, cp_lst, cl_lst, bst_lst, sif_ind_lst)
 %       conditions. List goes by the third index.
 %
 %-Returns:
-%   Matrix n-by-4-by-k of SIFs (for modes I and II: opening and sliding) for
-%   both ends of every crack, where 'k' equals to number of stress tensors 
-%   passed to the function.
-%   
-%   For i-th crack (i, 1)-th and (i, 2)-th elements are SIF for mode I at 
-%   negative and positive ends (-l and +l) of the crack respectively. 
-%   The (i, 3)-th and (i, 4)-th elements are for mode II in the similiar way. 
+%---sif_mat:
+%       Matrix n-by-4-by-k of SIFs (for modes I and II: opening and sliding) for
+%       both ends of every crack, where 'k' equals to number of stress tensors 
+%       passed to the function.
+%       
+%       For i-th crack (i, 1)-th and (i, 2)-th elements are SIF for mode I at 
+%       negative and positive ends (-l and +l) of the crack respectively. 
+%       The (i, 3)-th and (i, 4)-th elements are for mode II in the similiar way.
+%
+%---avg_tr:
+%       Average tractions on cracks.
+
 %
 
     %test_st_contour();
@@ -59,6 +64,13 @@ function sif_mat = crack_interact(cc_lst, cp_lst, cl_lst, bst_lst, sif_ind_lst)
     end
     
     sif_mat = [ sif_neg(:, 1, :), sif_pos(:, 1, :), sif_neg(:, 2, :), sif_pos(:, 2, :) ];
+    avg_tr  = zeros(N, 2, num_rhs);
+    for k = 1:num_rhs
+        for j = 1:N
+            avg_tr(j, 1, k) = sol_lst(2*sif_ind_lst(j)-1, k);
+            avg_tr(j, 2, k) = sol_lst(2*sif_ind_lst(j)-0, k);
+        end
+    end
     
     fprintf('%s: Done.\n', datestr(datetime('now')));
 end
