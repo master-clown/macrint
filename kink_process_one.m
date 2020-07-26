@@ -1,10 +1,10 @@
-function [sif_mat, avg_tr] = kink_sq_process_one(phi, chl, a, N, bst_lst)
+function [sif_mat, avg_tr] = kink_process_one(mode, phi, chl, a, N, bst_lst)
 %
 % SIFs for kink angle for square-lattice
 %
 %-Brief:
 %   Finds kinking angle of the rotated on 'phi' crack, which is located in
-%   the center of a square lattice of cracks.
+%   the center of a lattice of cracks.
 %
 %-Params:
 %---phi:
@@ -31,21 +31,25 @@ function [sif_mat, avg_tr] = kink_sq_process_one(phi, chl, a, N, bst_lst)
     
     cc_lst = zeros(num_cr, 2);                                                      % cracks' centers list
     
+    hl_lst = chl * ones(num_cr, 1);
+    
+    if mode == 2
+        hl_lst(1:num_cr_hv) = 2*hl_lst(1:num_cr_hv);
+    end
+    
     for i_col = 1:(num_cr_row-1)
         for i_row = 1:num_cr_row
             
             x0 = a*(i_col - (num_cr_row-1)/2 - 0.5);
             y0 = a*(i_row - (num_cr_row+1)/2);
             
-            cc_lst((i_col-1)*num_cr_row + i_row            , :) = [x0, y0];         % first half is for horizontal cracks
-            cc_lst((i_col-1)*num_cr_row + i_row + num_cr_hv, :) = [y0, x0];         % second -- for vertical 
+            cc_lst((i_col-1)*num_cr_row + i_row            , :) = [x0, y0].*[(mode == 2) + 1, 1];         % first half is for horizontal cracks
+            cc_lst((i_col-1)*num_cr_row + i_row + num_cr_hv, :) = [y0, x0].*[(mode == 2) + 1, 1];         % second -- for vertical 
         end
     end
     
-    hl_lst = chl * ones(num_cr, 1);
-    
     % (0,0) -- center of lattice
-    ind_lst = [ ...                                                        %%%%%%%%%%%%%%%% horizontal cracks
+    ind_lst = [ ...                                                        %%%%%%%%%%%%%%%% horizontal cracks 
                 (num_cr_row+1)/2, ...                                      % (-end, 0)
                 (num_cr_row+1)/2 + ((num_cr_row-1)/2-1)*num_cr_row, ...    % (-1, 0)
                 (num_cr_row+1)/2 + ((num_cr_row-1)/2-0)*num_cr_row+1, ...  % (+1,-2)
@@ -79,11 +83,12 @@ function [sif_mat, avg_tr] = kink_sq_process_one(phi, chl, a, N, bst_lst)
 % %     plot(cc_lst(2:2:num_cr_hv, 1), cc_lst(2:2:num_cr_hv, 2), 'o');
 % %     
 %     x_off = zeros(num_cr, 1);
-%     x_off(1:num_cr_hv) = chl;
+%     x_off(1:num_cr_hv) = 2*chl;
 %     y_off = zeros(num_cr, 1);
 %     y_off((num_cr_hv+1):end) = chl;
 % 
-%     quiver(cc_lst(:, 1) - x_off, cc_lst(:, 2) + y_off, 2*cos(phi_lst), 2*sin(phi_lst), 0);
+%     %quiver(cc_lst(:, 1) - x_off, cc_lst(:, 2) + y_off, 2*hl_lst.*cos(phi_lst), 2*hl_lst.*sin(phi_lst), 0);
+%     quiver(cc_lst(:, 1), cc_lst(:, 2), hl_lst.*cos(phi_lst), hl_lst.*sin(phi_lst), 0);
 %     drawnow;
              
     [sif_mat, avg_tr] = crack_interact(cc_lst, phi_lst, hl_lst, bst_lst, ind_lst);
