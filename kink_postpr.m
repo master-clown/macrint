@@ -1,71 +1,78 @@
 function kink_postpr()
-
-%     chl = 1;
-%     a = 3*chl;
-%     N = 4;
-%     mode = 3;
-%     
-%     if mode == 1
-%         load_sfx = 'ubs';
-%     else
-%         load_sfx = 'ub';
-%     end
-%     
-%     dn_lst = kink_create_out_dirs(false, 1, mode, chl, a, N, load_sfx);
-%     
-%     kink_lst_fn = strcat(dn_lst(4), "/kink_lst.mat");
-%     kink_lst = [];
-%     
-%     phi_lst = 0:90;
-%     for phi = phi_lst
-%         kink_mat_fn = strcat(dn_lst(3), sprintf("/phi=%d.mat", phi));
-%         if exist(kink_mat_fn, 'file') ~= 2
-%             fprintf("%s: '%s' does not exist.\n", datestr(datetime('now')), kink_mat_fn);
-%             return;
-%         end
-% 
-%         load(kink_mat_fn, "kink_mat");
-%         kink_lst = [ kink_lst, squeeze(kink_mat(4, 1, :)) ];
-%     end
-%     
-%     save(kink_lst_fn, "kink_lst");
     
 %------Rotation
 %
 %---Kinking angle
 %     figure;
 %     hold on;
-%     kink_res_graph(1, 1, 2.5, "red");
+%     plot_kink_sc_rot(1, 'us', "magenta");
+%     plot_kink(1, 1, 2.5, "red");
 %     
 %     figure;
 %     hold on;
-%     kink_res_graph(1, 1, 3, "green");
+%     plot_kink_sc_rot(1, 'us', "magenta");
+%     plot_kink(1, 1, 3, "green");
 %     
 %     figure;
 %     hold on;
-%     kink_res_graph(1, 1, 4, "blue");
+%     plot_kink_sc_rot(1, 'us', "magenta");
+%     plot_kink(1, 1, 4, "blue");
 %     
 %     figure;
 %     hold on;
-%     kink_res_graph(1, 1, 2.5, "red");
-%     kink_res_graph(1, 1, 3, "green");
-%     kink_res_graph(1, 1, 4, "blue");
+%     plot_kink(1, 1, 2.5, "red");
+%     plot_kink(1, 1, 3, "green");
+%     plot_kink(1, 1, 4, "blue");
 %     title("Square cases");
+%     
+%     figure;
+%     hold on;    
+%     plot_kink(1, 2, 3, "red");
+%     
+%     figure;
+%     hold on;
+%     plot_kink(1, 3, 3, "blue");
+%     
+%     figure;
+%     hold on;
+%     plot_kink(1, 2, 3, "red");
+%     plot_kink(1, 3, 3, "blue");
+%     title("Rectangular cases");
+
+%------Y-axis offset
+%
+%---Kinking angle
+    figure;
+    hold on;
+    plot_kink(2, 1, 2.5, "red");
     
     figure;
     hold on;
-    plot_kink_sc_rot(1, 'us', "red");
-    
-    plot_kink(1, 2, 3, "red");
+    plot_kink(2, 1, 3, "green");
     
     figure;
     hold on;
-    plot_kink(1, 3, 3, "blue");
+    plot_kink(2, 1, 4, "blue");
     
     figure;
     hold on;
-    plot_kink(1, 2, 3, "red");
-    plot_kink(1, 3, 3, "blue");
+    plot_kink(2, 1, 2.5, "red");
+    plot_kink(2, 1, 3, "green");
+    plot_kink(2, 1, 4, "blue");
+    title("Square cases");
+    
+    figure;
+    hold on;    
+    plot_kink(2, 2, 3, "red");
+    
+    figure;
+    hold on;
+    plot_kink(2, 3, 3, "blue");
+    
+    figure;
+    hold on;
+    plot_kink(2, 2, 3, "red");
+    plot_kink(2, 3, 3, "blue");
     title("Rectangular cases");
 end
 
@@ -86,25 +93,31 @@ function plot_kink(def_type, mode, a_coef, color)
         strcat("Shear ", period_str) ...
         strcat("Biaxial ", period_str) ...
     ];
+
+    ylabel("Kinking angle (deg)");
+    yticks(-180:20:180);
     if(mode ~= 1)
         ls_lst(2) = ls_lst(3);
         legstr_lst(2) = legstr_lst(3);
+        yticks(-180:10:180);
     end
     
-    ylabel("Kinking angle (deg)");
     if def_type == 1
-        xlabel("Rotation angle");
+        xlabel("Rotation angle (deg)");
         x_lst = 0:90;
-        def_type_str = "rotation_test";
     else
+        yticks(-180:10:180);
         xlabel("Y-axis offset");
         
         x_lst = 0 : 0.1*chl : (a/2);    
         if mode == 3
             x_lst = 2*x_lst;
         end
+        if mode ~= 1
+            yticks(-180:2:180);
+        end
         
-        def_type_str = "offset_test";
+        xticks(x_lst);
     end
     
     if mode == 1
@@ -129,7 +142,7 @@ function plot_kink(def_type, mode, a_coef, color)
 
     pl_num = strlength(load_sfx);
     for i_pl = 1:pl_num
-        plot(x_lst, kink_lst(i_pl, x_lst+1), ...
+        plot(x_lst, kink_lst(i_pl, :), ...
             'LineStyle', ls_lst(i_pl), ...
             'Color', color, ...
             'DisplayName', legstr_lst(i_pl));
@@ -145,7 +158,6 @@ function plot_kink_sc_rot(mode, load_str, color)
 %
 
     chl = 1.0;
-    N = 4;
     
     ls_lst = [ "-", "-."];
     legstr_lst = ...
@@ -159,7 +171,8 @@ function plot_kink_sc_rot(mode, load_str, color)
     
     title("Single crack rotation");
     ylabel("Kinking angle (deg)");
-    xlabel("Rotation angle");
+    yticks(-180:20:180);
+    xlabel("Rotation angle (deg)");
     x_lst = 0:90;
 
     kk_sc = zeros(2, length(x_lst));
@@ -229,8 +242,6 @@ function res = eval_kink_single_crack(chl, phi, load_str)
         
         sif_mat(1, 1:2, load_idx) = k1;
         sif_mat(1, 3:4, load_idx) = k2;
-        
-        load_idx = load_idx + 1;
     end
     
     res = squeeze(eval_kink(sif_mat));    
