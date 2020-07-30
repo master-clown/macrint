@@ -21,7 +21,7 @@ function kink_res_graph(def_type, mode, a_coef)
         xlabel("Rotation angle");
         ylabel("Kinking angle");
         phi_lst = 0:90;
-        def_type_str = "sl_k------------ink";
+        def_type_str = "sl_kink";
     else
         xlabel("Y-axis offset");
         ylabel("Kinking angle (deg)");
@@ -45,7 +45,7 @@ function kink_res_graph(def_type, mode, a_coef)
         load_sfx = 'ub';
     end
 
-    res_fn = sprintf("results/sl_kink/kink_rot_dep/chl=%.1f a=%.1fchl N=%d load=%s/result.mat", chl, a/chl, N, load_sfx);
+    res_fn = sprintf("results/%s/kink_rot_dep/chl=%.1f a=%.1fchl N=%d load=%s/result.mat", def_type_str, chl, a/chl, N, load_sfx);
     if exist(res_fn, 'file') ~= 2
         fprintf("%s: '%s' does not exist.\n", datestr(datetime('now')));
         return;

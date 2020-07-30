@@ -1,4 +1,4 @@
-function [sif_mat, avg_tr] = kink_process_one(mode, phi, chl, a, N, bst_lst)
+function [sif_mat, avg_tr] = kink_process_one(mode, phi, yoff, chl, a, N, bst_lst)
 %
 % SIFs for kink angle for square-lattice
 %
@@ -7,8 +7,16 @@ function [sif_mat, avg_tr] = kink_process_one(mode, phi, chl, a, N, bst_lst)
 %   the center of a lattice of cracks.
 %
 %-Params:
+%---mode:
+%       1: square lattice
+%       2: rectangular with period proportional to l and horL = 2 * verL.
+%       3: rectangular with constant period and horL = 2 * verL.
+%
 %---phi:
 %       Angle of the crack rotation (radians). Vectorized is possible
+%
+%---yoff:
+%       Y-axis offset of the target crack center.
 %
 %---chl:
 %       Crack HALF-LENGTH.
@@ -33,7 +41,7 @@ function [sif_mat, avg_tr] = kink_process_one(mode, phi, chl, a, N, bst_lst)
     
     hl_lst = chl * ones(num_cr, 1);
     
-    if mode == 2
+    if mode ~= 1
         hl_lst(1:num_cr_hv) = 2*hl_lst(1:num_cr_hv);
     end
     
@@ -43,8 +51,8 @@ function [sif_mat, avg_tr] = kink_process_one(mode, phi, chl, a, N, bst_lst)
             x0 = a*(i_col - (num_cr_row-1)/2 - 0.5);
             y0 = a*(i_row - (num_cr_row+1)/2);
             
-            cc_lst((i_col-1)*num_cr_row + i_row            , :) = [x0, y0].*[(mode == 2) + 1, 1];         % first half is for horizontal cracks
-            cc_lst((i_col-1)*num_cr_row + i_row + num_cr_hv, :) = [y0, x0].*[(mode == 2) + 1, 1];         % second -- for vertical 
+            cc_lst((i_col-1)*num_cr_row + i_row            , :) = [x0, y0].*[(mode ~= 1) + 1, (mode == 3) + 1];         % first half is for horizontal cracks
+            cc_lst((i_col-1)*num_cr_row + i_row + num_cr_hv, :) = [y0, x0].*[(mode ~= 1) + 1, (mode == 3) + 1];         % second -- for vertical 
         end
     end
     
@@ -71,9 +79,10 @@ function [sif_mat, avg_tr] = kink_process_one(mode, phi, chl, a, N, bst_lst)
     phi_lst(1:num_cr_hv) = 0;
     phi_lst(ind_lst(4)) = phi_lst(ind_lst(4)) + phi;
     
+    cc_lst(ind_lst(4), 2) = cc_lst(ind_lst(4), 2) + yoff;
     
 % geometry testing
-
+% 
 %     fig_name = sprintf('View of configuration of size %i', N+1);
 %     figure('Name', fig_name);
 % 
@@ -82,10 +91,10 @@ function [sif_mat, avg_tr] = kink_process_one(mode, phi, chl, a, N, bst_lst)
 % %     plot(cc_lst(1:2:num_cr_hv, 1), cc_lst(1:2:num_cr_hv, 2), '*');
 % %     plot(cc_lst(2:2:num_cr_hv, 1), cc_lst(2:2:num_cr_hv, 2), 'o');
 % %     
-%     x_off = zeros(num_cr, 1);
-%     x_off(1:num_cr_hv) = 2*chl;
-%     y_off = zeros(num_cr, 1);
-%     y_off((num_cr_hv+1):end) = chl;
+% %     x_off = zeros(num_cr, 1);
+% %     x_off(1:num_cr_hv) = 2*chl;
+% %     y_off = zeros(num_cr, 1);
+% %     y_off((num_cr_hv+1):end) = chl;
 % 
 %     %quiver(cc_lst(:, 1) - x_off, cc_lst(:, 2) + y_off, 2*hl_lst.*cos(phi_lst), 2*hl_lst.*sin(phi_lst), 0);
 %     quiver(cc_lst(:, 1), cc_lst(:, 2), hl_lst.*cos(phi_lst), hl_lst.*sin(phi_lst), 0);
