@@ -1,4 +1,4 @@
-function dn_lst = kink_create_out_dirs(def_type, mode, chl, a, N, load_sfx)
+function dn_lst = kink_create_out_dirs(create_flag, def_type, mode, chl, a, N, load_sfx)
 %
 %-Params:
 %---def_type:
@@ -36,7 +36,9 @@ function dn_lst = kink_create_out_dirs(def_type, mode, chl, a, N, load_sfx)
         sprintf("results/%s/%s/kink_lst/chl=%.1f a=%.1fchl N=%d load=%s", def_type_str, mode_str, chl, a/chl, N, load_sfx) ...
     ];
     
-    for dn = dn_lst
-        mkdir(dn);
+    if create_flag == true
+        for dn = dn_lst
+            mkdir(dn);
+        end
     end
 end

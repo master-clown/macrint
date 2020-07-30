@@ -1,34 +1,107 @@
 function kink_postpr()
 
-    kink_res_graph();
+%     chl = 1;
+%     a = 3*chl;
+%     N = 4;
+%     mode = 3;
+%     
+%     if mode == 1
+%         load_sfx = 'ubs';
+%     else
+%         load_sfx = 'ub';
+%     end
+%     
+%     dn_lst = kink_create_out_dirs(false, 1, mode, chl, a, N, load_sfx);
+%     
+%     kink_lst_fn = strcat(dn_lst(4), "/kink_lst.mat");
+%     kink_lst = [];
+%     
+%     phi_lst = 0:90;
+%     for phi = phi_lst
+%         kink_mat_fn = strcat(dn_lst(3), sprintf("/phi=%d.mat", phi));
+%         if exist(kink_mat_fn, 'file') ~= 2
+%             fprintf("%s: '%s' does not exist.\n", datestr(datetime('now')), kink_mat_fn);
+%             return;
+%         end
+% 
+%         load(kink_mat_fn, "kink_mat");
+%         kink_lst = [ kink_lst, squeeze(kink_mat(4, 1, :)) ];
+%     end
+%     
+%     save(kink_lst_fn, "kink_lst");
+    
+%------Rotation
+%
+%---Kinking angle
+%     figure;
+%     hold on;
+%     kink_res_graph(1, 1, 2.5, "red");
+%     
+%     figure;
+%     hold on;
+%     kink_res_graph(1, 1, 3, "green");
+%     
+%     figure;
+%     hold on;
+%     kink_res_graph(1, 1, 4, "blue");
+%     
+%     figure;
+%     hold on;
+%     kink_res_graph(1, 1, 2.5, "red");
+%     kink_res_graph(1, 1, 3, "green");
+%     kink_res_graph(1, 1, 4, "blue");
+%     title("Square cases");
+    
+    figure;
+    hold on;
+    plot_kink_sc_rot(1, 'us', "red");
+    
+    plot_kink(1, 2, 3, "red");
+    
+    figure;
+    hold on;
+    plot_kink(1, 3, 3, "blue");
+    
+    figure;
+    hold on;
+    plot_kink(1, 2, 3, "red");
+    plot_kink(1, 3, 3, "blue");
+    title("Rectangular cases");
 end
 
-function kink_res_graph(def_type, mode, a_coef)
+function plot_kink(def_type, mode, a_coef, color)
 %
 % def_type:
 %   1: rotation, 2: y-axis offset.
 
-    hold on;
-    
-    ls_lst = [ "-", "--", "-." ];
-    clr_lst = [ "red", "blue", "green" ];
-    
     chl = 1;
     a = a_coef*chl;
     N = 4;
     
+    period_str = sprintf("$%.1fl$", a_coef);
+    ls_lst = [ "-", "-.", "--" ];
+    legstr_lst = ...
+    [   ...
+        strcat("Uniaxial ", period_str) ...
+        strcat("Shear ", period_str) ...
+        strcat("Biaxial ", period_str) ...
+    ];
+    if(mode ~= 1)
+        ls_lst(2) = ls_lst(3);
+        legstr_lst(2) = legstr_lst(3);
+    end
+    
+    ylabel("Kinking angle (deg)");
     if def_type == 1
         xlabel("Rotation angle");
-        ylabel("Kinking angle");
-        phi_lst = 0:90;
-        def_type_str = "sl_k------------ink";
+        x_lst = 0:90;
+        def_type_str = "rotation_test";
     else
         xlabel("Y-axis offset");
-        ylabel("Kinking angle (deg)");
         
-        off_lst = 0 : 0.1*chl : (a/2);    
+        x_lst = 0 : 0.1*chl : (a/2);    
         if mode == 3
-            off_lst = 2*off_lst;
+            x_lst = 2*x_lst;
         end
         
         def_type_str = "offset_test";
@@ -41,80 +114,76 @@ function kink_res_graph(def_type, mode, a_coef)
         title("Rectangular lattice");
         load_sfx = 'ub';
     else
-        title("Square lattice, $l_x = 2l_y$");
+        title("Square lattice, $l_x = 2l_y$", 'Interpreter', 'latex');
         load_sfx = 'ub';
     end
 
-    res_fn = sprintf("results/sl_kink/kink_rot_dep/chl=%.1f a=%.1fchl N=%d load=%s/result.mat", chl, a/chl, N, load_sfx);
-    if exist(res_fn, 'file') ~= 2
-        fprintf("%s: '%s' does not exist.\n", datestr(datetime('now')));
+    dn_lst = kink_create_out_dirs(false, def_type, mode, chl, a, N, load_sfx);
+    kink_lst_fn = strcat(dn_lst(4), "/kink_lst.mat");
+    if exist(kink_lst_fn, 'file') ~= 2
+        fprintf("%s: '%s' does not exist.\n", datestr(datetime('now')), kink_lst_fn);
         return;
     end
 
-    load(res_fn, "kink_ang_lst");
-    %kink_ang_lst = 180*kink_ang_lst/pi;
+    load(kink_lst_fn, "kink_lst");
 
-    for i_pl = 1:3
-        plot(phi_lst, kink_ang_lst(i_pl, phi_lst+1), 'LineStyle', ls_lst(i_a), 'Color', clr_lst(i_pl));
+    pl_num = strlength(load_sfx);
+    for i_pl = 1:pl_num
+        plot(x_lst, kink_lst(i_pl, x_lst+1), ...
+            'LineStyle', ls_lst(i_pl), ...
+            'Color', color, ...
+            'DisplayName', legstr_lst(i_pl));
     end
     
-    legend("Uniax $2.5l$", "Shear $2.5l$", "Biax $2.5l$", ...
-           "Uniax $3l$", "Shear $3l$", "Biax $3l$", ...
-           "Uniax $4l$", "Shear $4l$", "Biax $4l$",'Interpreter','latex');
+    lg_obj = legend("show");
+    set(lg_obj, 'Interpreter', 'latex');
 end
 
-function rc_kink_rot_graph()
+function plot_kink_sc_rot(mode, load_str, color)
+%
+% Plot kink of a single crack being rotated.
+%
 
-    hold on;
-    xlabel("Rotation angle");
-    ylabel("Kinking angle");
-    title("Kinking angle (degrees). Rectangular lattice, $a = 3l$, $l_x = 2l_y$", 'Interpreter','latex');
-    
-    a_lst = [ 3 ];
-    ls_lst = [ "-" "--" ];
-    
-    chl = 1;
+    chl = 1.0;
     N = 4;
-    load_sfx = 'ub';
-    phi_lst = 0:90;
-    mode = 3;
     
-    if mode == 1
-        mode_dn = "sl_kink";
-    elseif mode == 2
-        mode_dn = "rl_kink";
-    elseif mode == 3
-        mode_dn = "srl_kink";
+    ls_lst = [ "-", "-."];
+    legstr_lst = ...
+    [   ...
+        "Uniaxial SC" ...
+        "Shear SC" ...
+    ];
+    if(mode ~= 1)
+        chl = 2.0;
     end
     
-    kk = zeros(strlength(load_sfx), length(phi_lst));
-    kk_sc = zeros(strlength(load_sfx), length(phi_lst));
-    
-    for i_a = 1:length(a_lst)
-        
-        a = a_lst(i_a)*chl;
+    title("Single crack rotation");
+    ylabel("Kinking angle (deg)");
+    xlabel("Rotation angle");
+    x_lst = 0:90;
 
-        kink_dn = sprintf("results/%s/kink_ang/chl=%.1f a=%.1fchl N=%d load=%s/", mode_dn, chl, a/chl, N, load_sfx);
-        if exist(kink_dn, 'dir') ~= 7
-            fprintf("%s: directory '%s' does not exist.\n", kink_dn, datestr(datetime('now')));
-            return;
-        end
-        
-        for i = 1:length(phi_lst)
-            load(strcat(kink_dn, sprintf("phi=%d.mat", phi_lst(i))), "kink_ang");            
-            kk(:, i) = squeeze(kink_ang(4, 1, :));
-            
-            kink_sc = eval_kink_single_crack((mode~=1 + 1)*chl, phi_lst(i)*pi/180, load_sfx);
-            kk_sc(:, i) = kink_sc(1, :);
-        end
-        
-        for i_pl = 1:2
-            plot(phi_lst, kk(i_pl, :), 'LineStyle', ls_lst(i_pl), 'Color', "blue");
-            plot(phi_lst, kk_sc(i_pl, :), 'LineStyle', ls_lst(i_pl), 'Color', "black");
-        end
+    kk_sc = zeros(2, length(x_lst));
+    
+    for(i = 1:length(x_lst))
+        kink_mat = eval_kink_single_crack(chl, x_lst(i)*pi/180, 'us');
+        kk_sc(:, i) = kink_mat(1, :);
     end
     
-    legend("Uniaxial", "Uniaxial. Single crack", "Biaxial", "Biax. Single crack", 'Interpreter','latex');
+    if(contains(load_str, 'u'))
+        plot(x_lst, kk_sc(1, x_lst+1), ...
+            'LineStyle', ls_lst(1), ...
+            'Color', color, ...
+            'DisplayName', legstr_lst(1));
+    end
+    if(contains(load_str, 's'))
+        plot(x_lst, kk_sc(2, x_lst+1), ...
+            'LineStyle', ls_lst(2), ...
+            'Color', color, ...
+            'DisplayName', legstr_lst(2));
+    end
+    
+    lg_obj = legend("show");
+    set(lg_obj, 'Interpreter', 'latex');
 end
 
 function res = eval_kink_single_crack(chl, phi, load_str)
@@ -162,27 +231,9 @@ function res = eval_kink_single_crack(chl, phi, load_str)
         sif_mat(1, 3:4, load_idx) = k2;
         
         load_idx = load_idx + 1;
-    end    
-    if contains(load_str, 'b')
-        [ k1, k2 ] = sif_tens_sc(1.0);
-        
-        sif_mat(1, 1:2, load_idx) = k1;
-        sif_mat(1, 3:4, load_idx) = k2;
-        
-        load_idx = load_idx + 1;
     end
     
     res = squeeze(eval_kink(sif_mat));    
-end
-
-function sif_to_kink(chl, a, N, load_sfx, phi_lst)
-
-    sif_dn = sprintf("results/sl_kink/sif_mat/chl=%.1f a=%.1fchl N=%d load=%s/", chl, a/chl, N, load_sfx);
-    if exist(sif_dn, 'dir') ~= 7
-        fprintf("%s: directory '%s' does not exist.\n", sif_dn, datestr(datetime('now')));
-        return;
-    end
-
 end
 
 function stresskink_rot_graph()
@@ -344,132 +395,6 @@ function ERRk1_rot_graph()
     end
 end
 
-function kink_sif_graph()
-
-    chl = 1;
-    a = 3*chl;
-    N = 4;
-    load_sfx = 'ubs';
-    
-    sif_dn = sprintf("results/sl_kink/sif_mat/chl=%.1f a=%.1fchl N=%d load=%s/", chl, a/chl, N, load_sfx);
-    if exist(sif_dn, 'dir') ~= 7
-        fprintf("%s: directory '%s' does not exist.\n", datestr(datetime('now')));
-        return;
-    end
-    
-    phi_lst = 0:5;
-    sif1 = zeros(3, size(phi_lst, 2));
-    sif2 = zeros(3, size(phi_lst, 2));
-    
-    for i = 1:size(phi_lst, 2)
-        
-        sif_fn = strcat(sif_dn, sprintf("phi=%d.mat", phi_lst(i)));
-        load(sif_fn, "sif_mat");
-        
-        sif1(:, i) = squeeze(sif_mat(4, 1, :));
-        sif2(:, i) = squeeze(sif_mat(4, 3, :));        
-    end
-    
-    hold on;
-    lin_lst = [ "-", "--", ":" ];
-    sym_lst = [ "x", "o" ];
-    
-    for i = 1:3
-        plot(phi_lst,  sif1(i, :), 'Color', 'black', 'LineStyle', lin_lst(i), 'Marker', sym_lst(1));
-        plot(phi_lst,  sif2(i, :), 'Color', 'black', 'LineStyle', lin_lst(i), 'Marker', sym_lst(2));
-    end
-    
-    d1 = line(nan, nan, 'Marker', 'none', 'Color', 'black', 'LineStyle', lin_lst(1));
-    d2 = line(nan, nan, 'Marker', 'none', 'Color', 'black', 'LineStyle', lin_lst(2));
-    d3 = line(nan, nan, 'Marker', 'none', 'Color', 'black', 'LineStyle', lin_lst(3));
-    d4 = line(nan, nan, 'Marker', sym_lst(1), 'Color', 'none', 'MarkerEdgeColor', 'black');
-    d5 = line(nan, nan, 'Marker', sym_lst(2), 'Color', 'none', 'MarkerEdgeColor', 'black');
-    
-    legend([ d1, d2, d3, d4, d5 ], ...
-           [ "Uniax", "Shear", "Biax", "SIF mode I", "SIF mode II" ]);
-end
-
-function res = eval_kink_poly(sif_mat)
-
-    sif_siz = size(sif_mat);
-    res = zeros(sif_siz(1), 2, sif_mat(3));
-
-    num_cr = size(sif_mat, 1);
-    for k = 1:sif_siz(3)
-        for icr = 1:num_cr
-            for itp = 1:2
-                k1 = sif_mat(icr, itp, k);
-                k2 = sif_mat(icr, itp+2, k);
-                
-                a = k1*k2;
-                b = k1^2 - 3*k2^2;
-                
-                rts = roots([ ...
-                              4*a^2 + b^2 ...
-                              12*a^2 + 4*b*k2^2 - b^2 ...
-                              9*a^2 - 4*b*k2^2 + 4*k2^4 ...
-                              -4*k2^4 ...
-                            ]);
-                rts = 2*acos(sqrt(rts));          % neglected signs after sqrt!
-            end
-        end
-    end
-
-    res = 180*res/pi;
-end
-
-function kink_eval_test()
-
-%     function res = eval_kink(sif_mat)
-% 
-%         sif_siz = size(sif_mat);
-%         res = zeros(sif_siz(1), 2, sif_mat(3));
-% 
-%         num_cr = size(sif_mat, 1);
-%         for k = 1:sif_siz(3)
-%             for icr = 1:num_cr
-%                 ms_bef_f = sif_mat(icr, 3, k) < 0;
-%                 ms_bef_s = sif_mat(icr, 1, k) < 0;
-%                 res(icr, 1, k) = (-1)^ms_bef_f* ...
-%                                  2*atan((sif_mat(icr, 1, k) - (-1)^ms_bef_s*sqrt(...
-%                                          sif_mat(icr, 1, k)^2 + 8*sif_mat(icr, 3, k)^2) ...
-%                                         ) / sif_mat(icr, 3, k) / 4);
-% %                 res(icr, 2, k) = 2*atan((sif_mat(icr, 2, k) - sqrt(...
-% %                                        sif_mat(icr, 2, k).^2 + 8*sif_mat(icr, 4, k).^2) ...
-% %                                       ) ./ sif_mat(icr, 4, k) / 4);
-%             end
-%         end
-% 
-%         res = 180*res/pi;
-%     end
-
-    chl = 1;
-    a = 3*chl;
-    N = 4;
-    load_sfx = 'ubs';
-    
-    sif_dn = sprintf("results/sl_kink/sif_mat/chl=%.1f a=%.1fchl N=%d load=%s/", chl, a/chl, N, load_sfx);
-    if exist(sif_dn, 'dir') ~= 7
-        fprintf("%s: directory '%s' does not exist.\n", datestr(datetime('now')));
-        return;
-    end
-    
-    phi_lst = 0:5;
-    kink_ang_lst = zeros(3, size(phi_lst, 2));
-    
-    for i = 1:size(phi_lst, 2)
-        
-        sif_fn = strcat(sif_dn, sprintf("phi=%d.mat", phi_lst(i)));
-        load(sif_fn, "sif_mat");
-        
-        kink_ang = eval_kink_poly(sif_mat / sqrt(pi));
-        
-        kink_ang_lst(:, i) = squeeze(kink_ang(4, 1, :));    
-    end
-    
-    plot(phi_lst, kink_ang_lst);
-    legend("Uniax", "Shear", "Biax");
-end
 
 
 

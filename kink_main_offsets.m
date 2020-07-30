@@ -30,10 +30,9 @@ function kink_main_impl(a_coef, mode)
     end
 
     dn_lst = kink_create_out_dirs(2, mode, chl, a, N, load_sfx);
-    res_fn = strcat(dn_lst(4), "/result.mat");
+    res_fn = strcat(dn_lst(4), "/kink_lst.mat");
     
-    off_lst = 0 : 0.1*chl : (a/2);
-    
+    off_lst = 0 : 0.1*chl : (a/2);    
     if mode == 3
         off_lst = 2*off_lst;
     end

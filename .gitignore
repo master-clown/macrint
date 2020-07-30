@@ -2,6 +2,7 @@
 
 *.eps
 *.png
+*.asv
 
 /bak/
 /results/
