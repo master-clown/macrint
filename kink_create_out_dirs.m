@@ -2,7 +2,7 @@ function dn_lst = kink_create_out_dirs(create_flag, def_type, mode, chl, a, N, l
 %
 %-Params:
 %---def_type:
-%       1: rotation, 2: y-axis offset.
+%       1: rotation, 2: y-axis offset, 3: T-stress.
 %
 %---mode:
 %       1: square lattice
@@ -14,10 +14,12 @@ function dn_lst = kink_create_out_dirs(create_flag, def_type, mode, chl, a, N, l
 %       b: biaxial stretch
 %       s: shear
 
-    if def_type == 1
+    if(def_type == 1)
         def_type_str = "rotation_test";
-    else
+    elseif(def_type == 2)
         def_type_str = "offset_test";
+    else
+        def_type_str = "tstress_test";
     end
     
     if mode == 1
