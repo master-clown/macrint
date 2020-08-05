@@ -1,6 +1,10 @@
 function res = eval_kink(sif_mat)
 
     sif_siz = size(sif_mat);
+    if(length(sif_siz) < 3)
+        sif_siz(3) = 1;
+    end
+    
     res = zeros(sif_siz(1), 2, sif_siz(3));
     
     for k = 1:sif_siz(3)

@@ -37,9 +37,11 @@ function kink_main_impl(a_coef, mode)
         
         bst_lst(1, 1, 1) = lam_lst(i)*bst_lst(2, 2, 1);
         
-        fprintf('%s: step #%d/%d. Calculations for lambda = %.1f...\n', datestr(datetime('now')), i, lam_num, lam);
+        fprintf('%s: step #%d/%d. Calculations for lambda = %.1f...\n', datestr(datetime('now')), i, lam_num, lam_lst(i));
         
         [sif_mat, avg_tr] = kink_process_one(mode, phi, 0.0, chl, a, N, bst_lst);
+%         load("temp.mat", "sif_mat", "avg_tr");
+        
         
         kink_mat = eval_kink(sif_mat);
         kink_new_mat = eval_new_kink(sif_mat, bst_lst(2, 2, 1), lam_lst(i));
@@ -47,9 +49,9 @@ function kink_main_impl(a_coef, mode)
         kink_lst = [ kink_lst, squeeze(kink_mat(4, 1, :)) ];
         kink_new_lst = [ kink_new_lst, squeeze(kink_new_mat(4, 1)) ];
         
-        sif_mat_fn = strcat(dn_lst(1), sprintf("/lam=%.3f.mat", lam));
-        avg_tr_fn = strcat(dn_lst(2), sprintf("/lam=%.3f.mat", lam));
-        kink_mat_fn = strcat(dn_lst(3), sprintf("/lam=%.3f.mat", lam));
+        sif_mat_fn = strcat(dn_lst(1), sprintf("/lam=%.3f.mat", lam_lst(i)));
+        avg_tr_fn = strcat(dn_lst(2), sprintf("/lam=%.3f.mat", lam_lst(i)));
+        kink_mat_fn = strcat(dn_lst(3), sprintf("/lam=%.3f.mat", lam_lst(i)));
         
         save(sif_mat_fn, "sif_mat");
         save(avg_tr_fn, "avg_tr");
@@ -71,10 +73,11 @@ function kink_mat = eval_new_kink(sif_mat, syy, lam)
             c = cos(th/2);
             s = sin(th/2);
             
-            stt = ((k1*c - 3*k2*s)*c^2 + syy*(lam-1)*s^2) / sqrt(2*pi*r);
+            stt = (k1*c - 3*k2*s) .* c.^2 / sqrt(2*pi*r) + syy*(lam-1)*sin(th).^2;
         end
         
-        [maxval, argmax_idx] = max(stress_tt(th_lst));
+        stt = stress_tt(th_lst);
+        [maxval, argmax_idx] = max(stt);
         
         kink = th_lst(argmax_idx);
     end

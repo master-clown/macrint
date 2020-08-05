@@ -1,23 +1,23 @@
 function kink_postpr()
     
-%------Rotation
-%
-%---Kinking angle
-%     figure;
-%     hold on;
-%     plot_kink_sc_rot(1, 'us', "magenta");
-%     plot_kink(1, 1, 2.5, "red");
-%     
-%     figure;
-%     hold on;
-%     plot_kink_sc_rot(1, 'us', "magenta");
-%     plot_kink(1, 1, 3, "green");
-%     
-%     figure;
-%     hold on;
-%     plot_kink_sc_rot(1, 'us', "magenta");
-%     plot_kink(1, 1, 4, "blue");
-%     
+% %------Rotation
+% %
+% %---Kinking angle
+% %     figure;
+% %     hold on;
+% %     plot_kink_sc_rot(1, 'us', "magenta");
+% %     plot_kink(1, 1, 2.5, "red");
+% %     
+% %     figure;
+% %     hold on;
+% %     plot_kink_sc_rot(1, 'us', "magenta");
+% %     plot_kink(1, 1, 3, "green");
+% %     
+% %     figure;
+% %     hold on;
+% %     plot_kink_sc_rot(1, 'us', "magenta");
+% %     plot_kink(1, 1, 4, "blue");
+% %     
 %     figure;
 %     hold on;
 %     plot_kink(1, 1, 2.5, "red");
@@ -25,88 +25,111 @@ function kink_postpr()
 %     plot_kink(1, 1, 4, "blue");
 %     plot_kink_sc_rot(1, 'ubs', "magenta");
 %     title("Square cases");
-%     
-%     figure;
-%     hold on;    
-%     plot_kink(1, 2, 3, "red");
-%     
-%     figure;
-%     hold on;
-%     plot_kink(1, 3, 3, "blue");
-%     
+% %     
+% %     figure;
+% %     hold on;    
+% %     plot_kink(1, 2, 3, "red");
+% %     
+% %     figure;
+% %     hold on;
+% %     plot_kink(1, 3, 3, "blue");
+% %     
 %     figure;
 %     hold on;
 %     plot_kink(1, 2, 3, "red");
 %     plot_kink(1, 3, 3, "blue");
 %     plot_kink(1, 1, 3, "green", "ub");
 %     title("Rectangular cases");
-% 
-% %---Stresses in neighbours
+% % 
+% % %---Stresses in neighbours
 %     plot_stress(1, 1, 2.5, "-");    
 %     plot_stress(1, 1, 3, "-");    
 %     plot_stress(1, 1, 4, "-");    
 %     plot_stress(1, 2, 3, "-");    
 %     plot_stress(1, 3, 3, "-");
-%
-% %---ERR in neighbours
+% %
+% % %---ERR in neighbours
 %     plot_err(1, 1, 2.5, "-");    
 %     plot_err(1, 1, 3, "-");    
 %     plot_err(1, 1, 4, "-");    
 %     plot_err(1, 2, 3, "-");    
 %     plot_err(1, 3, 3, "-");
-
-
-% %------Y-axis offset
-% %
-% %---Kinking angle
+% 
+% 
+% % %------Y-axis offset
+% % %
+% % %---Kinking angle
+% %     figure;
+% %     hold on;
+% %     plot_kink(2, 1, 2.5, "red");
+% %     
+% %     figure;
+% %     hold on;
+% %     plot_kink(2, 1, 3, "green");
+% %     
+% %     figure;
+% %     hold on;
+% %     plot_kink(2, 1, 4, "blue");
+% %     
 %     figure;
 %     hold on;
+%     plot_kink_sc_rot(1, 'ubs', "magenta", 0 : 0.1 : 2.0);
 %     plot_kink(2, 1, 2.5, "red");
-%     
-%     figure;
-%     hold on;
 %     plot_kink(2, 1, 3, "green");
-%     
-%     figure;
-%     hold on;
 %     plot_kink(2, 1, 4, "blue");
-%     
-    figure;
-    hold on;
-    plot_kink_sc_rot(1, 'ubs', "magenta", 0 : 0.1 : 2.0);
-    plot_kink(2, 1, 2.5, "red");
-    plot_kink(2, 1, 3, "green");
-    plot_kink(2, 1, 4, "blue");
-    title("Square cases");
-%     
-%     figure;
-%     hold on;    
-%     plot_kink(2, 2, 3, "red");
-%     
-%     figure;
-%     hold on;
-%     plot_kink(2, 3, 3, "blue");
-%     
+%     title("Square cases");
+% %     
+% %     figure;
+% %     hold on;    
+% %     plot_kink(2, 2, 3, "red");
+% %     
+% %     figure;
+% %     hold on;
+% %     plot_kink(2, 3, 3, "blue");
+% %     
 %     figure;
 %     hold on;
 %     plot_kink(2, 1, 3, "green", "ub");
 %     plot_kink(2, 2, 3, "red");
 %     plot_kink(2, 3, 3, "blue");
 %     title("Rectangular cases");
-% 
+% % 
 % %---Stresses in neighbours
 %     plot_stress(2, 1, 2.5, "-");    
 %     plot_stress(2, 1, 3, "-");    
 %     plot_stress(2, 1, 4, "-");    
 %     plot_stress(2, 2, 3, "-");    
 %     plot_stress(2, 3, 3, "-");
-%
-%---ERR in neighbours
+% 
+% %---ERR in neighbours
 %     plot_err(2, 1, 2.5, "-");    
 %     plot_err(2, 1, 3, "-");    
 %     plot_err(2, 1, 4, "-");    
 %     plot_err(2, 2, 3, "-");    
 %     plot_err(2, 3, 3, "-");
+
+%------T-stress
+%
+    figure;
+    hold on;
+    plot_tstress(1, 2.5, "red");    
+    
+    figure;
+    hold on;
+    plot_tstress(1, 3, "green");    
+    
+    figure;
+    hold on;
+    plot_tstress(1, 4, "blue");    
+    
+    figure;
+    hold on;
+    plot_tstress(2, 3, "black");    
+    
+    figure;
+    hold on;
+    plot_tstress(3, 3, "magenta");
+    %title("T-stress test");
 end
 
 function plot_kink(def_type, mode, a_coef, color, load_str)
@@ -455,7 +478,7 @@ function plot_stress(def_type, mode, a_coef, lstyle)
             xlabel("Y-axis offset [m]");
             xticks(x_lst);
         end
-        title(strcat("Kink at crack tips. ", title_pfx, case_lst(i_case)), 'Interpreter','latex');
+        title(strcat("Kinking angle at crack tips. ", title_pfx, case_lst(i_case)), 'Interpreter','latex');
         lg_obj = legend("show");
         set(lg_obj, 'Interpreter', 'latex');
     end
@@ -587,6 +610,57 @@ function plot_err(def_type, mode, a_coef, lstyle)
     end
 end
 
+function plot_tstress(mode, a_coef, color)
+
+    chl = 1;
+    a = a_coef*chl;
+    N = 4;
+    load_sfx = "ub";
+    
+    ls_lst = [ "-" "--" ];
+    period_str = sprintf("$a = %.1fl$", a_coef);
+    if(mode == 3)
+        period_str = sprintf("$a = %.1fl_x$", a_coef);
+    end
+
+    ylabel("Kinking angle [deg]");
+%     yticks(-180:20:180);
+%     if(mode ~= 1)
+%         yticks(-180:10:180);
+%     end
+    
+    xlabel("$\lambda = \sigma^\infty_{xx} / \sigma^\infty_{yy}$", 'Interpreter', 'latex');
+    x_lst = -1 : 0.1 : 1;
+    
+    if mode == 1
+        leg_pfx = "Square";
+    elseif mode == 2
+        leg_pfx = "Rect";
+    else
+        leg_pfx = "Square, $l_x = 2l_y$";
+    end
+ 
+    dn_lst = kink_create_out_dirs(false, 3, mode, chl, a, N, load_sfx);
+    kink_lst_fn = strcat(dn_lst(4), "/kink_lst.mat");
+    kink_new_lst_fn = strcat(dn_lst(4), "/kink_new_lst.mat");
+    if exist(kink_lst_fn, 'file') ~= 2
+        fprintf("%s: '%s' does not exist.\n", datestr(datetime('now')), kink_lst_fn);
+        return;
+    end
+
+    load(kink_lst_fn, "kink_lst");
+    load(kink_new_lst_fn, "kink_new_lst");
+    kink_new_lst = kink_new_lst * 180/pi;
+    
+    leg1 = sprintf("Old. %s. %s", leg_pfx, period_str);
+    leg2 = sprintf("New. %s. %s", leg_pfx, period_str);
+    
+    plot(x_lst, kink_lst, 'LineStyle', ls_lst(1), 'Color', color, 'DisplayName', leg1);
+    plot(x_lst, kink_new_lst, 'LineStyle', ls_lst(2), 'Color', color, 'DisplayName', leg2);
+    
+    lg_obj = legend("show");
+    set(lg_obj, 'Interpreter', 'latex');
+end
 
 
 
