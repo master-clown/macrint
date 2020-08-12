@@ -1,4 +1,4 @@
-function [sif_mat, avg_tr] = kink_process_one(mode, phi, yoff, chl, a, N, bst_lst)
+function [sif_mat, avg_tr] = kink_process_one(sif_type, mode, phi, yoff, chl, a, N, bst_lst)
 %
 % SIFs for kink angle for square-lattice
 %
@@ -7,6 +7,10 @@ function [sif_mat, avg_tr] = kink_process_one(mode, phi, yoff, chl, a, N, bst_ls
 %   the center of a lattice of cracks.
 %
 %-Params:
+%---sif_type:
+%       1: SIF mode I and II
+%       2: SIF mode III
+%
 %---mode:
 %       1: square lattice
 %       2: rectangular with period proportional to l and horL = 2 * verL.
@@ -99,6 +103,10 @@ function [sif_mat, avg_tr] = kink_process_one(mode, phi, yoff, chl, a, N, bst_ls
 %     %quiver(cc_lst(:, 1) - x_off, cc_lst(:, 2) + y_off, 2*hl_lst.*cos(phi_lst), 2*hl_lst.*sin(phi_lst), 0);
 %     quiver(cc_lst(:, 1), cc_lst(:, 2), hl_lst.*cos(phi_lst), hl_lst.*sin(phi_lst), 0);
 %     drawnow;
-             
-    [sif_mat, avg_tr] = crack_interact(cc_lst, phi_lst, hl_lst, bst_lst, ind_lst);
+        
+    if(sif_type == 1)
+        [sif_mat, avg_tr] = crack_interact(cc_lst, phi_lst, hl_lst, bst_lst, ind_lst);
+    else
+        [sif_mat, avg_tr] = crack_interact_mode3(cc_lst, phi_lst, hl_lst, bst_lst, ind_lst);
+    end
 end

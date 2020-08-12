@@ -54,6 +54,23 @@ function kink_postpr()
 %     plot_err(1, 1, 4, "-");    
 %     plot_err(1, 2, 3, "-");    
 %     plot_err(1, 3, 3, "-");
+
+%---SIF mode 3 in neighbours
+    figure;
+    plot_sif3(1, 1, 2.5, "-");    
+    
+    figure;
+    plot_sif3(1, 1, 3, "-");    
+    
+    figure;
+    plot_sif3(1, 1, 4, "-");    
+    
+    figure;
+    plot_sif3(1, 2, 3, "-");    
+    
+    figure;
+    plot_sif3(1, 3, 3, "-");
+
 % 
 % 
 % % %------Y-axis offset
@@ -108,28 +125,36 @@ function kink_postpr()
 %     plot_err(2, 2, 3, "-");    
 %     plot_err(2, 3, 3, "-");
 
-%------T-stress
-%
-    figure;
-    hold on;
-    plot_tstress(1, 2.5, "red");    
-    
-    figure;
-    hold on;
-    plot_tstress(1, 3, "green");    
-    
-    figure;
-    hold on;
-    plot_tstress(1, 4, "blue");    
-    
-    figure;
-    hold on;
-    plot_tstress(2, 3, "black");    
-    
-    figure;
-    hold on;
-    plot_tstress(3, 3, "magenta");
-    %title("T-stress test");
+% %------T-stress
+% %
+%     figure;
+%     hold on;
+%     plot_tstress(1, 2.5, "red");    
+%     
+%     figure;
+%     hold on;
+%     plot_tstress(1, 3, "green");    
+%     
+%     figure;
+%     hold on;
+%     plot_tstress(1, 4, "blue");    
+%     
+%     figure;
+%     hold on;
+%     plot_tstress(2, 3, "black");    
+%     
+%     figure;
+%     hold on;
+%     plot_tstress(3, 3, "magenta");
+%     %title("T-stress test");
+
+% %---SIF mode 3 in neighbours
+%     plot_sif3(2, 1, 2.5, "-");    
+%     plot_sif3(2, 1, 3, "-");    
+%     plot_sif3(2, 1, 4, "-");    
+%     plot_sif3(2, 2, 3, "-");    
+%     plot_sif3(2, 3, 3, "-");
+
 end
 
 function plot_kink(def_type, mode, a_coef, color, load_str)
@@ -662,7 +687,88 @@ function plot_tstress(mode, a_coef, color)
     set(lg_obj, 'Interpreter', 'latex');
 end
 
+function plot_sif3(def_type, mode, a_coef, lstyle)
+    
+    idx_lst = [ 4 2 9 10 ];                                                 % 4 2 9 10 | 2 9 10 1 13
+    tip_lst = [ 1 2 2  1 ];                                                 % 1 2 2  1 | 1 1  2 1  2
+    chl_lst = ones(length(idx_lst));
+    clr_lst = ...
+    [ ...
+        "red" ...
+        "green" ...
+        "blue" ...
+        "black" ...
+    ];
 
+    chl = 1;            % for input files
+	a = a_coef*chl;
+    N = 4;
+    load_sfx = 'y';
+    period_str = sprintf("$a = %.1fl$", a_coef);
+    if(mode == 3)
+        period_str = sprintf("$a = %.1fl_x$", a_coef);
+    end
+    
+    legstr_lst = [ "(1, 0) left"   "(-1, 0) right" ...
+                   "(0, 1) bottom" "(0,-1) top" ];
+
+    if(def_type == 1)
+        x_lst = 0:90;
+    else
+        x_lst = 0 : 0.1*chl : (a/2);
+        if mode == 3
+            x_lst = 2*x_lst;
+        end
+    end
+    
+    if(mode == 1)
+        title_pfx = "Square lattice. ";
+    elseif(mode == 2)
+        title_pfx = "Rectangular lattice. ";
+    else
+        title_pfx = "Square lattice, $l_x = 2l_y$. ";
+    end
+    
+    dn_lst = sif3_create_out_dirs(false, def_type, mode, chl, a, N, load_sfx);
+    
+    k3 = zeros(size(x_lst));
+    
+    for(i_tip = 1:length(idx_lst))
+
+        for(i = 1:length(x_lst))
+            if(def_type == 1)
+                sif_fn = strcat(dn_lst(1), sprintf("/phi=%d.mat", x_lst(i)));
+            else
+                sif_fn = strcat(dn_lst(1), sprintf("/yoff=%.3f.mat", x_lst(i)));
+            end
+
+            load(sif_fn, "sif_mat");
+
+            k3(i) = sif_mat(idx_lst(i_tip), tip_lst(i_tip));
+        end
+
+        hold on;
+        plot(x_lst, k3, ...
+             'LineStyle', lstyle, ...
+             'Color', clr_lst(i_tip), ...
+             'DisplayName', legstr_lst(i_tip));
+    end
+
+%     if(i_case < 3 - (strlength(load_sfx) == 2))
+%         yticks(-180 : 30 : 180);
+%     else
+%         yticks(-180 : 10 : 180);
+%     end
+    if(def_type == 1)
+        xlabel("Rotation angle [deg]");
+    else
+        xlabel("Y-axis offset [m]");
+        xticks(x_lst);
+    end
+    title(strcat("SIF mode III. Antiplane ZY. ", title_pfx, period_str), 'Interpreter','latex');
+    lg_obj = legend("show");
+    set(lg_obj, 'Interpreter', 'latex');
+end
 
 
 

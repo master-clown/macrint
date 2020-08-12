@@ -9,8 +9,9 @@ function test_main()
     %test_2collinear_vardist([0.4, 0.2, 0.1, 0.04, 0.02], [ true, true, true ]);
     %test_2collinear_vardist(0.1 : 0.1 : 2.1, [ true, true, false ]);
     %test_2stacked_vardist(0.2 : 0.1 : 2.0, [ true, true, true]);
-    test_2x2_vardist(0.1 : 0.1 : 2.0, [ true, true ]);
+    %test_2x2_vardist(0.1 : 0.1 : 2.0, [ true, true ]);
     %test_2collinear_rotate([0.0:pi/144:5*pi/36, 6*pi/36 : pi/36 : pi/2], [ true, true, true ]);
+    test_mode3_2collinear_rotate([0:pi/432:2*pi/36, 2*pi/36:pi/144:5*pi/36, 6*pi/36 : pi/36 : pi/2], [ true, true, true ]);    
     %test_2collinear_translate([0.0:0.01:0.5, 0.6:0.1:2.0], [ true, true, true ]);
 end
 
@@ -359,6 +360,91 @@ function test_2collinear_rotate(angle_lst, output_flag_lst)
 
         sif_mat = crack_interact(cr_center_lst, cr_phi_lst, cr_len_lst, ...
                                  ext_stress_tensor) / sqrt(pi*hlen);
+    end
+end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%% TWO CRACKS, THE RIGHT ONE IS BEING ROTATED. MODE 3 %%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function test_mode3_2collinear_rotate(angle_lst, output_flag_lst)
+%
+%-Desc:
+%   Method for solving a problem for two collinear cracks,
+%   when the right one rotates
+%
+%-Params:
+%---output_flag_lst:
+%       List of boolean flags for output control. By indices:
+%       (1): Turn on/off table output
+%       (2): Turn on/off plotting of SIF mode I in inner point of left crack
+%       (3): Turn on/off plotting of SIF mode II in outer point of left crack
+%
+
+    if output_flag_lst(1)
+        
+        fprintf('INTERACTION OF TWO COLLINEAR IDENTICAL CRACKS UNDER ANTIPLANE TRACTION\n');
+        fprintf('%10s%15s%15s\n', ...
+                'Angle', ...
+                'KIII/K^0 hor', ...
+                'KIII/K^0 rot');
+    end
+
+    eval_num = length(angle_lst);
+    sif_lst = zeros(eval_num, 4);                                               
+    
+    for i = 1:eval_num
+        
+        angle = angle_lst(i);
+        sif_mat = solve_2collinear_rotate(angle, 1);
+        sif_lst(i, 1:2) = sif_mat(1, :);
+        sif_lst(i, 3:4) = sif_mat(2, :);
+        
+        if output_flag_lst(1)
+            fprintf('%10.3f%15.3f%15.3f\n', ...
+                    180*angle/pi, ...
+                    sif_lst(i, 2), ...
+                    sif_lst(i, 3));
+        end
+    end
+    
+    angle_lst = 180/pi * angle_lst;
+    
+    marker_lst = [ 'o', '*' ];
+    for i_data = 1:2
+        if output_flag_lst(i_data+1)
+            plot(angle_lst, sif_lst(:, i_data+1), ...
+                 'Marker', marker_lst(i_data));
+            yticks(0.0:0.1:1.6);
+            hold on;
+        end
+    end
+    
+    legend('KIII / K^0. Hor., right tip', 'KIII / K^0. Rot., left tip');
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    function sif_mat = solve_2collinear_rotate(angle, hlen)
+    %
+    %-Params:
+    %---angle:
+    %       Rotation angle
+    %
+    %---len:
+    %       Crack half-lengths.
+    %
+    
+        cr_center_lst = [-hlen, 0.0;
+                          10*2*hlen + hlen, 0.0 ];
+        cr_phi_lst = [ 0, angle ];
+        cr_len_lst = [ hlen, hlen ];
+        
+        for i_cr = 1:2
+            cr_center_lst(i_cr, :) = cr_center_lst(i_cr, :);
+        end
+        
+        ext_stress_tensor = [ 0.0; 1.0 ];    
+
+        sif_mat = crack_interact_mode3(cr_center_lst, cr_phi_lst, cr_len_lst, ...
+                                       ext_stress_tensor, 1:2) / sqrt(pi*hlen);
     end
 end
 
