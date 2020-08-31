@@ -42,34 +42,34 @@ function kink_postpr()
 %     title("Rectangular cases");
 % % 
 % % %---Stresses in neighbours
-%     plot_stress(1, 1, 2.5, "-");    
+    plot_stress(1, 1, 2.5, "-");    
 %     plot_stress(1, 1, 3, "-");    
 %     plot_stress(1, 1, 4, "-");    
 %     plot_stress(1, 2, 3, "-");    
 %     plot_stress(1, 3, 3, "-");
 % %
-% % %---ERR in neighbours
-%     plot_err(1, 1, 2.5, "-");    
-%     plot_err(1, 1, 3, "-");    
-%     plot_err(1, 1, 4, "-");    
-%     plot_err(1, 2, 3, "-");    
-%     plot_err(1, 3, 3, "-");
+%---ERR in neighbours
+%     plot_err(2, 1, 1, 2.5, "-");    
+%     plot_err(1, 1, 1, 3, "-");    
+%     plot_err(1, 1, 1, 4, "-");    
+%     plot_err(1, 1, 2, 3, "-");    
+%     plot_err(1, 1, 3, 3, "-");
 
 %---SIF mode 3 in neighbours
-    figure;
-    plot_sif3(1, 1, 2.5, "-");    
-    
-    figure;
-    plot_sif3(1, 1, 3, "-");    
-    
-    figure;
-    plot_sif3(1, 1, 4, "-");    
-    
-    figure;
-    plot_sif3(1, 2, 3, "-");    
-    
-    figure;
-    plot_sif3(1, 3, 3, "-");
+%     figure;
+%     plot_sif3(1, 1, 2.5, "-");    
+%     
+%     figure;
+%     plot_sif3(1, 1, 3, "-");    
+%     
+%     figure;
+%     plot_sif3(1, 1, 4, "-");    
+%     
+%     figure;
+%     plot_sif3(1, 2, 3, "-");    
+%     
+%     figure;
+%     plot_sif3(1, 3, 3, "-");
 
 % 
 % 
@@ -112,18 +112,18 @@ function kink_postpr()
 %     title("Rectangular cases");
 % % 
 % %---Stresses in neighbours
-%     plot_stress(2, 1, 2.5, "-");    
+    plot_stress(2, 1, 2.5, "-");    
 %     plot_stress(2, 1, 3, "-");    
 %     plot_stress(2, 1, 4, "-");    
 %     plot_stress(2, 2, 3, "-");    
 %     plot_stress(2, 3, 3, "-");
 % 
 % %---ERR in neighbours
-%     plot_err(2, 1, 2.5, "-");    
-%     plot_err(2, 1, 3, "-");    
-%     plot_err(2, 1, 4, "-");    
-%     plot_err(2, 2, 3, "-");    
-%     plot_err(2, 3, 3, "-");
+%     plot_err(2, 2, 1, 2.5, "-");    
+%     plot_err(2, 2, 1, 3, "-");    
+%     plot_err(2, 2, 1, 4, "-");    
+%     plot_err(2, 2, 2, 3, "-");    
+%     plot_err(2, 2, 3, 3, "-");
 
 % %------T-stress
 % %
@@ -149,10 +149,19 @@ function kink_postpr()
 %     %title("T-stress test");
 
 % %---SIF mode 3 in neighbours
+%     figure;
 %     plot_sif3(2, 1, 2.5, "-");    
+    
+%     figure;
 %     plot_sif3(2, 1, 3, "-");    
+
+%     figure;
 %     plot_sif3(2, 1, 4, "-");    
+
+%     figure;
 %     plot_sif3(2, 2, 3, "-");    
+
+%     figure;
 %     plot_sif3(2, 3, 3, "-");
 
 end
@@ -405,8 +414,8 @@ function plot_stress(def_type, mode, a_coef, lstyle)
         strcat("Shear load. ", period_str) ...
         strcat("Biaxial load. ", period_str) ...
     ];
-    legstr_lst = [ "(1, 0) left"   "(-1, 0) right" ...
-                   "(0, 1) bottom" "(0,-1) top" ];
+    legstr_lst = [ "Crack 1"   "Crack 3" ...
+                   "Crack 2" "Crack 4" ];
 
     if(mode ~= 1)
         case_lst(2) = case_lst(3);
@@ -441,7 +450,9 @@ function plot_stress(def_type, mode, a_coef, lstyle)
     kk = zeros(size(x_lst));
     
     for(i_case = 1:strlength(load_sfx))
-        figure();        
+        figure('Name', strcat("Kinking angle at crack tips. ", title_pfx, case_lst(i_case)));        
+        set(gcf,'color','w');
+        box on;
         
         for(i_tip = 1:length(idx_lst))
 
@@ -465,32 +476,49 @@ function plot_stress(def_type, mode, a_coef, lstyle)
                 kk(1) = (-1)*kk(1);
             end
             
-            subplot(2, 1, 1);
-            hold on;
-            plot(x_lst, ss, ...
-                 'LineStyle', lstyle, ...
-                 'Color', clr_lst(i_tip), ...
-                 'DisplayName', legstr_lst(i_tip));
-
-            subplot(2, 1, 2);
+            if(def_type == 2)               
+                
+                tmp(1, :) = x_lst;
+                tmp(2, :) = kk;
+                tmp(3, :) = ss;
+                
+                kk = spline(x_lst, kk, 0 : 0.01*chl : x_lst(end));
+                ss = spline(x_lst, ss, 0 : 0.01*chl : x_lst(end));
+                x_lst = 0 : 0.01*chl : x_lst(end);
+            end
+            
+%             subplot(2, 1, 1);
+%             hold on;
+%             plot(x_lst, ss, ...
+%                  'LineStyle', lstyle, ...
+%                  'Color', clr_lst(i_tip), ...
+%                  'DisplayName', legstr_lst(i_tip));
+% 
+%             subplot(2, 1, 2);
             hold on;
             plot(x_lst, kk, ...
                  'LineStyle', lstyle, ...
                  'Color', clr_lst(i_tip), ...
                  'DisplayName', legstr_lst(i_tip));
+             
+             if(def_type == 2)   
+                x_lst = tmp(1, :);
+                kk = tmp(2, :);
+                ss = tmp(3, :);
+            end
         end
         
-        subplot(2, 1, 1);
-        ylabel("Stress [Pa]");
-        yticks(0 : 0.1 : 1.6);
-        title(strcat("Relative stress at crack tips. ", title_pfx, case_lst(i_case)), 'Interpreter','latex');
-        lg_obj = legend("show");
-        set(lg_obj, 'Interpreter', 'latex');
-        if(def_type == 2)
-            xticks(x_lst);
-        end
-        
-        subplot(2, 1, 2);
+%         subplot(2, 1, 1);
+%         ylabel("Stress [Pa]");
+%         yticks(0 : 0.1 : 1.6);
+%         title(strcat("Relative stress at crack tips. ", title_pfx, case_lst(i_case)), 'Interpreter','latex');
+%         lg_obj = legend("show");
+%         set(lg_obj, 'Interpreter', 'latex');
+%         if(def_type == 2)
+%             xticks(x_lst);
+%         end
+%         
+%         subplot(2, 1, 2);
         ylabel("Kinking angle [deg]");
         if(i_case < 3 - (strlength(load_sfx) == 2))
             yticks(-180 : 30 : 180);
@@ -498,24 +526,58 @@ function plot_stress(def_type, mode, a_coef, lstyle)
             yticks(-180 : 10 : 180);
         end
         if(def_type == 1)
-            xlabel("Rotation angle [deg]");
+            xlabel("Rotation angle $\alpha$ [deg]", 'Interpreter','latex');
+            xticks(0:15:90);
         else
-            xlabel("Y-axis offset [m]");
+            xlabel("Relative uplift $\Delta / l$", 'Interpreter','latex');
             xticks(x_lst);
         end
-        title(strcat("Kinking angle at crack tips. ", title_pfx, case_lst(i_case)), 'Interpreter','latex');
+        xlim([0 max(x_lst)]);
+%         title(strcat("Kinking angle at crack tips. ", title_pfx, case_lst(i_case)), 'Interpreter','latex');
         lg_obj = legend("show");
         set(lg_obj, 'Interpreter', 'latex');
     end
 end
 
-function plot_err(def_type, mode, a_coef, lstyle)
+function plot_err(form_type, def_type, mode, a_coef, lstyle)
+%
+% form_type = 1: plain ERR
+% form_type = 2: ERR in kink direction
 
     function err = eval_ERR(sif)
     % sif: 
     %   2-vec with SIF I and II mode
-        
-        err = sif(1)^2 + sif(2)^2;
+    %%%
+    
+        k = sif(1);
+        m = sif(2);
+    
+        if(form_type == 1)
+            err = k^2 + m^2;
+        else
+            rt = sqrt(k^2 + 8*m^2);
+            err = 128*m^4 * (k^2 + 6*m^2 + k*rt) / (16*m^2 + (k - rt)^2)^2;
+        end
+    end
+
+    function s1 = eval_SIF1(sif, ka)
+    % sif: 
+    %   2-vec with SIF I and II mode
+    % ka:
+    %   kinking angle
+    %%%
+    
+        k = sif(1);
+        m = sif(2);
+    
+        if(form_type == 1)
+            s1 = k;
+        else
+            c11 = (3*cos(ka/2) + cos(3*ka/2))/4;
+            c12 =-3*(sin(ka/2) + sin(3*ka/2))/4;
+            
+            s1 = c11 * k + c12 * m;
+        end
     end
     
     idx_lst = [ 4 2 9 10 ];                                                 % 4 2 9 10 | 2 9 10 1 13
@@ -542,8 +604,8 @@ function plot_err(def_type, mode, a_coef, lstyle)
         strcat("Shear load. ", period_str) ...
         strcat("Biaxial load. ", period_str) ...
     ];
-    legstr_lst = [ "(1, 0) left"   "(-1, 0) right" ...
-                   "(0, 1) bottom" "(0,-1) top" ];
+    legstr_lst = [ "Crack 1"   "Crack 3" ...
+                   "Crack 2" "Crack 4" ];
 
     if(mode ~= 1)
         case_lst(2) = case_lst(3);
@@ -555,6 +617,12 @@ function plot_err(def_type, mode, a_coef, lstyle)
         if mode == 3
             x_lst = 2*x_lst;
         end
+    end
+    
+    if(form_type == 1)
+        title_form_str = "";
+    else
+        title_form_str = " (at kink tip)";
     end
     
     if(mode == 1)
@@ -574,62 +642,98 @@ function plot_err(def_type, mode, a_coef, lstyle)
     k1 = zeros(size(x_lst));
     
     for(i_case = 1:strlength(load_sfx))
-        figure();        
+        fig_err = figure('Name', sprintf("Rel. ERR%s. %s%s", title_form_str, title_pfx, case_lst(i_case)));        
+        set(gcf,'color','w');
+        box on;
+        
+        fig_sif = figure('Name', sprintf("Rel. SIF mode I%s. %s%s", title_form_str, title_pfx, case_lst(i_case)));      
+        set(gcf,'color','w');
+        box on;
         
         for(i_tip = 1:length(idx_lst))
 
             for(i = 1:length(x_lst))
                 if(def_type == 1)
                     sif_fn = strcat(dn_lst(1), sprintf("/phi=%d.mat", x_lst(i)));
+                    kink_fn = strcat(dn_lst(3), sprintf("/phi=%d.mat", x_lst(i)));
                 else
                     sif_fn = strcat(dn_lst(1), sprintf("/yoff=%.3f.mat", x_lst(i)));
+                    kink_fn = strcat(dn_lst(3), sprintf("/yoff=%.3f.mat", x_lst(i)));
                 end
-
+                
                 load(sif_fn, "sif_mat");
-
-                err(i) = eval_ERR(sif_mat(idx_lst(i_tip), [tip_lst(i_tip), tip_lst(i_tip)+2], i_case));
-                k1(i) = sif_mat(idx_lst(i_tip), tip_lst(i_tip), i_case);
+                load(kink_fn, "kink_mat");
+                
+                err(i) = eval_ERR(sif_mat(idx_lst(i_tip), [tip_lst(i_tip), tip_lst(i_tip)+2], i_case)) / (pi*chl*(1 + (mode>1)));
+                k1(i) = eval_SIF1(sif_mat(idx_lst(i_tip), [tip_lst(i_tip), tip_lst(i_tip)+2], i_case), ...
+                                  kink_mat(idx_lst(i_tip), tip_lst(i_tip), i_case) * pi/180) / sqrt(pi*chl*(1 + (mode>1)));
             end
             
-            subplot(2, 1, 1);
+            if(def_type == 2)               
+                
+                tmp(1, :) = x_lst;
+                tmp(2, :) = err;
+                tmp(3, :) = k1;
+                
+                err = spline(x_lst, err, 0 : 0.01*chl : x_lst(end));
+                k1 = spline(x_lst, k1, 0 : 0.01*chl : x_lst(end));
+                x_lst = 0 : 0.01*chl : x_lst(end);
+            end
+            
+            [maxerr, maxerr_idx] = max(err);
+            [maxk1, maxk1_idx] = max(k1);
+            
+            figure(fig_err);
             hold on;
             plot(x_lst, err, ...
                  'LineStyle', lstyle, ...
                  'Color', clr_lst(i_tip), ...
-                 'DisplayName', legstr_lst(i_tip));
+                 'DisplayName', strcat(legstr_lst(i_tip))); %, sprintf(". Max at %.3f", x_lst(maxerr_idx))));
 
-            subplot(2, 1, 2);
+            figure(fig_sif);
             hold on;
             plot(x_lst, k1, ...
                  'LineStyle', lstyle, ...
                  'Color', clr_lst(i_tip), ...
-                 'DisplayName', legstr_lst(i_tip));
+                 'DisplayName', strcat(legstr_lst(i_tip))); %, sprintf(". Max at %.3f", x_lst(maxk1_idx))));
+             
+            if(def_type == 2)   
+                x_lst = tmp(1, :);
+                err = tmp(2, :);
+                k1 = tmp(3, :);
+            end
         end
         
-        subplot(2, 1, 1);
+        figure(fig_err);
         ylabel("ERR");
-       %yticks(0 : 0.1 : 1.6);
-        title(strcat("ERR. ", title_pfx, case_lst(i_case)), 'Interpreter','latex');
-        lg_obj = legend("show");
-        set(lg_obj, 'Interpreter', 'latex');
-        if(def_type == 2)
-            xticks(x_lst);
-        end
-        
-        subplot(2, 1, 2);
-        ylabel("SIF I");
 %         if(i_case < 3 - (strlength(load_sfx) == 2))
 %             yticks(-180 : 30 : 180);
 %         else
 %             yticks(-180 : 10 : 180);
 %         end
         if(def_type == 1)
-            xlabel("Rotation angle [deg]");
+            xlabel("Rotation angle $\alpha$ [deg]", 'Interpreter','latex');
+            xticks(0:15:90);
         else
-            xlabel("Y-axis offset [m]");
+            xlabel("Relative uplift $\Delta / l$", 'Interpreter','latex');
             xticks(x_lst);
         end
-        title(strcat("SIF mode I. ", title_pfx, case_lst(i_case)), 'Interpreter','latex');
+        xlim([0 max(x_lst)]);
+        
+        lg_obj = legend("show");
+        set(lg_obj, 'Interpreter', 'latex');
+        
+        figure(fig_sif);
+        ylabel("$K_I$", 'Interpreter', 'latex');
+        if(def_type == 1)
+            xlabel("Rotation angle $\alpha$ [deg]", 'Interpreter','latex');
+            xticks(0:15:90);
+        else
+            xlabel("Relative uplift $\Delta / l$", 'Interpreter','latex');
+            xticks(x_lst);
+        end
+        xlim([0 max(x_lst)]);
+        
         lg_obj = legend("show");
         set(lg_obj, 'Interpreter', 'latex');
     end
@@ -709,8 +813,8 @@ function plot_sif3(def_type, mode, a_coef, lstyle)
         period_str = sprintf("$a = %.1fl_x$", a_coef);
     end
     
-    legstr_lst = [ "(1, 0) left"   "(-1, 0) right" ...
-                   "(0, 1) bottom" "(0,-1) top" ];
+    legstr_lst = [ "Crack 1"   "Crack 3" ...
+                   "Crack 2" "Crack 4" ];
 
     if(def_type == 1)
         x_lst = 0:90;
@@ -744,14 +848,15 @@ function plot_sif3(def_type, mode, a_coef, lstyle)
 
             load(sif_fn, "sif_mat");
 
-            k3(i) = sif_mat(idx_lst(i_tip), tip_lst(i_tip));
+            k3(i) = sif_mat(idx_lst(i_tip), tip_lst(i_tip)) / sqrt(pi*chl*(1 + (mode==3)));
         end
 
         hold on;
+        [maxk3, max_idx] = max(k3);
         plot(x_lst, k3, ...
              'LineStyle', lstyle, ...
              'Color', clr_lst(i_tip), ...
-             'DisplayName', legstr_lst(i_tip));
+             'DisplayName', strcat(legstr_lst(i_tip))); %, sprintf(". Max, Argmax = %.3f, %.1f", maxk3, x_lst(max_idx))));
     end
 
 %     if(i_case < 3 - (strlength(load_sfx) == 2))
@@ -759,15 +864,19 @@ function plot_sif3(def_type, mode, a_coef, lstyle)
 %     else
 %         yticks(-180 : 10 : 180);
 %     end
+    ylabel("$K_{III}$", 'Interpreter', 'latex');
     if(def_type == 1)
-        xlabel("Rotation angle [deg]");
+        xlabel("Rotation angle $\alpha$ [deg]", 'Interpreter','latex');
     else
-        xlabel("Y-axis offset [m]");
+        xlabel("Relative uplift $\Delta / l$", 'Interpreter','latex');
         xticks(x_lst);
     end
-    title(strcat("SIF mode III. Antiplane ZY. ", title_pfx, period_str), 'Interpreter','latex');
+    xlim([0 max(x_lst)]);
+%     title(strcat("SIF mode III. Antiplane ZY. ", title_pfx, period_str), 'Interpreter','latex');
     lg_obj = legend("show");
     set(lg_obj, 'Interpreter', 'latex');
+    set(gcf,'color','w');
+    box on;
 end
 
 

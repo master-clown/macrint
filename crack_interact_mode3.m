@@ -40,7 +40,7 @@ function [sif_mat, avg_tr] = crack_interact_mode3(cc_lst, cp_lst, cl_lst, bc_lst
     sif_pos = zeros(N, num_rhs);
     
     % SIFs to get, integrate equations of the system we must
-    for k = 1:N
+    parfor k = 1:N
         
         l = cl_lst(sif_ind_lst(k));
         
@@ -101,7 +101,7 @@ function [av_tr_lst, rhs] = find_average_tractions(cc_lst, cp_lst, cl_lst, bc_ls
         ind_lst = setdiff(1:N, i);
         
         % fill the row of the matrix
-        for j = 1:N
+        parfor j = 1:N
         if j ~= i
             x0_j = cc_lst(j, 1);
             y0_j = cc_lst(j, 2);

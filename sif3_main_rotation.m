@@ -1,25 +1,23 @@
 function sif3_main_rotation()
 
-    sif3_main_impl(3.0, 1);
-    sif3_main_impl(4.0, 1);
-    sif3_main_impl(2.5, 1);
-    sif3_main_impl(3.0, 2);
-    sif3_main_impl(3.0, 3);
+%     sif3_main_impl(0:90, 3.0, 1);
+    sif3_main_impl(19:90, 4.0, 1);
+    sif3_main_impl(0:90, 2.5, 1);
+    sif3_main_impl(0:90, 3.0, 2);
+    sif3_main_impl(0:90, 3.0, 3);
 end
 
-function sif3_main_impl(a_coef, mode)
+function sif3_main_impl(phi_lst, a_coef, mode)
 
     chl = 1;
     a = a_coef*chl;
     N = 4;
     
-    load_sfx = 'y';
+    load_sfx = 'xy';
     bst_lst = zeros(2, 1);
-    bst_lst(2) = 1;
+    bst_lst(1:2) = 1;
 
     dn_lst = sif3_create_out_dirs(true, 1, mode, chl, a, N, load_sfx);
-    
-    phi_lst = 0:90;
     
     for phi = phi_lst
         

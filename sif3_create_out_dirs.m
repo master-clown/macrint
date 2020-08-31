@@ -1,10 +1,6 @@
 function dn_lst = sif3_create_out_dirs(create_flag, def_type, mode, chl, a, N, load_sfx)
 %
 %-Params:
-%---sif_type:
-%       1: SIF mode I and II
-%       2: SIF mode III
-%
 %---def_type:
 %       1: rotation, 2: y-axis offset
 %
