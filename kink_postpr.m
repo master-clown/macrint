@@ -1,23 +1,23 @@
 function kink_postpr()
     
-% %------Rotation
-% %
-% %---Kinking angle
-% %     figure;
-% %     hold on;
-% %     plot_kink_sc_rot(1, 'us', "magenta");
-% %     plot_kink(1, 1, 2.5, "red");
-% %     
-% %     figure;
-% %     hold on;
-% %     plot_kink_sc_rot(1, 'us', "magenta");
-% %     plot_kink(1, 1, 3, "green");
-% %     
-% %     figure;
-% %     hold on;
-% %     plot_kink_sc_rot(1, 'us', "magenta");
-% %     plot_kink(1, 1, 4, "blue");
-% %     
+%------Rotation
+%
+%---Kinking angle
+%     figure;
+%     hold on;
+%     plot_kink_sc_rot(1, 'us', "magenta");
+%     plot_kink(1, 1, 2.5, "red");
+%     
+%     figure;
+%     hold on;
+%     plot_kink_sc_rot(1, 'us', "magenta");
+%     plot_kink(1, 1, 3, "green");
+%     
+%     figure;
+%     hold on;
+%     plot_kink_sc_rot(1, 'us', "magenta");
+%     plot_kink(1, 1, 4, "blue");
+%     
 %     figure;
 %     hold on;
 %     plot_kink(1, 1, 2.5, "red");
@@ -25,15 +25,15 @@ function kink_postpr()
 %     plot_kink(1, 1, 4, "blue");
 %     plot_kink_sc_rot(1, 'ubs', "magenta");
 %     title("Square cases");
-% %     
-% %     figure;
-% %     hold on;    
-% %     plot_kink(1, 2, 3, "red");
-% %     
-% %     figure;
-% %     hold on;
-% %     plot_kink(1, 3, 3, "blue");
-% %     
+%     
+%     figure;
+%     hold on;    
+%     plot_kink(1, 2, 3, "red");
+%     
+%     figure;
+%     hold on;
+%     plot_kink(1, 3, 3, "blue");
+%     
 %     figure;
 %     hold on;
 %     plot_kink(1, 2, 3, "red");
@@ -42,7 +42,7 @@ function kink_postpr()
 %     title("Rectangular cases");
 % % 
 % % %---Stresses in neighbours
-    plot_stress(1, 1, 2.5, "-");    
+%     plot_stress(1, 1, 2.5, "-");    
 %     plot_stress(1, 1, 3, "-");    
 %     plot_stress(1, 1, 4, "-");    
 %     plot_stress(1, 2, 3, "-");    
@@ -112,7 +112,7 @@ function kink_postpr()
 %     title("Rectangular cases");
 % % 
 % %---Stresses in neighbours
-    plot_stress(2, 1, 2.5, "-");    
+%     plot_stress(2, 1, 2.5, "-");    
 %     plot_stress(2, 1, 3, "-");    
 %     plot_stress(2, 1, 4, "-");    
 %     plot_stress(2, 2, 3, "-");    
@@ -178,7 +178,7 @@ function plot_kink(def_type, mode, a_coef, color, load_str)
     ls_lst = [ "-", "-.", "--" ];
     period_str = sprintf("$a = %.1fl$", a_coef);
     if(mode == 3)
-        period_str = sprintf("$a = %.1fl_x$", a_coef);
+        period_str = sprintf("a = %.1fl_x", a_coef);
     end
     legstr_lst = ...
     [   ...
@@ -187,7 +187,7 @@ function plot_kink(def_type, mode, a_coef, color, load_str)
         strcat("Biaxial ", period_str) ...
     ];
 
-    ylabel("Kinking angle [deg]");
+    ylabel("Kinking angle \theta_* [deg]");
     yticks(-180:20:180);
     if(mode ~= 1)
         yticks(-180:10:180);
@@ -218,7 +218,7 @@ function plot_kink(def_type, mode, a_coef, color, load_str)
         title("Rectangular lattice");
         load_sfx = 'ub';
     else
-        title("Square lattice, $l_x = 2l_y$", 'Interpreter', 'latex');
+        title("Square lattice, l_x = 2l_y", 'Interpreter', 'latex');
         load_sfx = 'ub';
     end
     
@@ -278,7 +278,7 @@ function plot_kink_sc_rot(mode, load_str, color, x_lst)
     end
     
     title("Single crack rotation");
-    ylabel("Kinking angle [deg]");
+    ylabel("Kinking angle $\theta_*$ [deg]");
     yticks(-180:20:180);
     xlabel("Rotation angle [deg]");
     
@@ -519,7 +519,7 @@ function plot_stress(def_type, mode, a_coef, lstyle)
 %         end
 %         
 %         subplot(2, 1, 2);
-        ylabel("Kinking angle [deg]");
+        ylabel("Kinking angle $\theta_*$ [deg]");
         if(i_case < 3 - (strlength(load_sfx) == 2))
             yticks(-180 : 30 : 180);
         else
@@ -705,7 +705,7 @@ function plot_err(form_type, def_type, mode, a_coef, lstyle)
         end
         
         figure(fig_err);
-        ylabel("ERR");
+        ylabel("$G(\theta_*) / G^0$", 'Interpreter', 'latex');
 %         if(i_case < 3 - (strlength(load_sfx) == 2))
 %             yticks(-180 : 30 : 180);
 %         else
@@ -724,7 +724,7 @@ function plot_err(form_type, def_type, mode, a_coef, lstyle)
         set(lg_obj, 'Interpreter', 'latex');
         
         figure(fig_sif);
-        ylabel("$K_I$", 'Interpreter', 'latex');
+        ylabel("$K_I / K_I^0$", 'Interpreter', 'latex');
         if(def_type == 1)
             xlabel("Rotation angle $\alpha$ [deg]", 'Interpreter','latex');
             xticks(0:15:90);
@@ -752,7 +752,7 @@ function plot_tstress(mode, a_coef, color)
         period_str = sprintf("$a = %.1fl_x$", a_coef);
     end
 
-    ylabel("Kinking angle [deg]");
+    ylabel("Kinking angle $\theta_*$ [deg]");
 %     yticks(-180:20:180);
 %     if(mode ~= 1)
 %         yticks(-180:10:180);
@@ -864,7 +864,7 @@ function plot_sif3(def_type, mode, a_coef, lstyle)
 %     else
 %         yticks(-180 : 10 : 180);
 %     end
-    ylabel("$K_{III}$", 'Interpreter', 'latex');
+    ylabel("$K_{III} / K_{III}^0$", 'Interpreter', 'latex');
     if(def_type == 1)
         xlabel("Rotation angle $\alpha$ [deg]", 'Interpreter','latex');
     else

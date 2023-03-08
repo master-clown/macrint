@@ -7,7 +7,8 @@ function dn_lst = kink_create_out_dirs(create_flag, def_type, mode, chl, a, N, l
 %---mode:
 %       1: square lattice
 %       2: rectangular with period proportional to l and horL = 2 * verL.
-%       3: rectangular with constant period and horL = 2 * verL.
+%       3: square with horL = 2 * verL.
+%       4: a single row of collinear cracks
 %
 %---load_sfx:
 %       u: uniaxial stretch
@@ -26,8 +27,10 @@ function dn_lst = kink_create_out_dirs(create_flag, def_type, mode, chl, a, N, l
         mode_str = "sl_kink";
     elseif mode == 2
         mode_str = "rl_kink";
-    else
+    elseif mode == 3
         mode_str = "srl_kink";
+    elseif mode == 4
+        mode_str = "col_kink";
     end
 
     dn_lst =  ...

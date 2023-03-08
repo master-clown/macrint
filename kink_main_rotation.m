@@ -1,10 +1,12 @@
 function kink_main_rotation()
 
-    kink_main_impl(3.0, 1);
-    kink_main_impl(4.0, 1);
-    kink_main_impl(2.5, 1);
-    kink_main_impl(3.0, 2);
-    kink_main_impl(3.0, 3);
+%     kink_main_impl(3.0, 1);
+%     kink_main_impl(4.0, 1);
+%     kink_main_impl(2.5, 1);
+%     kink_main_impl(3.0, 2);
+%     kink_main_impl(3.0, 3);
+
+    kink_main_impl(2.5, 4);
 end
 
 function kink_main_impl(a_coef, mode)
@@ -13,7 +15,7 @@ function kink_main_impl(a_coef, mode)
     a = a_coef*chl;
     N = 4;
     
-    if mode == 1
+    if mode == 1 || mode == 4
         load_sfx = 'ubs';
         bst_lst = zeros(2, 2, 3);
         bst_lst(2, 2, 1) = 1;
@@ -29,7 +31,7 @@ function kink_main_impl(a_coef, mode)
         bst_lst(2, 2, 2) = 1;
     end
 
-    dn_lst = kink_create_out_dirs(1, mode, chl, a, N, load_sfx);
+    dn_lst = kink_create_out_dirs(1, 1, mode, chl, a, N, load_sfx);
     kink_lst_fn = strcat(dn_lst(4), "/kink_lst.mat");
     
     phi_lst = 0:90;
@@ -44,7 +46,7 @@ function kink_main_impl(a_coef, mode)
         
         fprintf('%s: calculations for %i degrees...\n', datestr(datetime('now')), phi);
         
-        [sif_mat, avg_tr] = kink_process_one(mode, phi*pi/180, chl, a, N, bst_lst);
+        [sif_mat, avg_tr] = kink_process_one(1, mode, phi*pi/180, 0.0, chl, a, N, bst_lst);
         kink_mat = eval_kink(sif_mat);
         
         kink_lst = [ kink_lst, squeeze(kink_mat(4, 1, :)) ];
