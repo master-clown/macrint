@@ -1,13 +1,20 @@
+period = 3;
+
+plot_stress_fields1(@() st_collinear_crack_row(period));
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TEST FUNCTION
 % Run it to test level curves of stress fields (st_ functions).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function plot_stress_fields(st_func)
+function plot_stress_fields1(st_func)
     [st_func_mode1, st_func_mode2] = st_func();
 
-    x0 =-2.0;
-    y0 =-4.0;
-    ph = pi/8;
+    %x0 =-2.0;
+    %y0 =-4.0;
+    %ph = pi/8;
+    x0 = 0;
+    y0 = 0;
+    ph = 0;
     l = 1.0;
 
     % `st_func_mode*()` return tensors transformed due to rotations.
