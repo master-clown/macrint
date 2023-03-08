@@ -6,12 +6,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function test_main()
-    %test_2collinear_vardist([0.4, 0.2, 0.1, 0.04, 0.02], [ true, true, true ]);
+    test_2collinear_vardist([0.4, 0.2, 0.1, 0.04, 0.02], [ true, true, true ]);
     %test_2collinear_vardist(0.1 : 0.1 : 2.1, [ true, true, false ]);
     %test_2stacked_vardist(0.2 : 0.1 : 2.0, [ true, true, true]);
     %test_2x2_vardist(0.1 : 0.1 : 2.0, [ true, true ]);
     %test_2collinear_rotate([0.0:pi/144:5*pi/36, 6*pi/36 : pi/36 : pi/2], [ true, true, true ]);
-    test_mode3_2collinear_rotate([0:pi/432:2*pi/36, 2*pi/36:pi/144:5*pi/36, 6*pi/36 : pi/36 : pi/2], [ true, true, true ]);    
+    %test_mode3_2collinear_rotate([0:pi/432:2*pi/36, 2*pi/36:pi/144:5*pi/36, 6*pi/36 : pi/36 : pi/2], [ true, true, true ]);    
     %test_2collinear_translate([0.0:0.01:0.5, 0.6:0.1:2.0], [ true, true, true ]);
 end
 
@@ -99,7 +99,7 @@ function test_2collinear_vardist(cdist_lst, output_flag_lst)
                                         0.0, 1.0 ] * rot_mat;
 
         sif_mat = crack_interact(cr_center_lst, cr_phi_lst, cr_len_lst, ...
-                                 ext_stress_tensor) / sqrt(pi*hlen);
+                                 ext_stress_tensor, [1, 2], @st_single_crack) / sqrt(pi*hlen);
     end
 end
 
