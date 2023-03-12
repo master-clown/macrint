@@ -47,8 +47,8 @@ function st = st_normal_tensor(x_glob, y_glob, x0, y0, phi0, hl, period)
     imCfDer2 = imag(cfDer2);
 
     sxx = -imCfDer1 - y * reCfDer2; 
-    sxy = -imCfDer1 + y * reCfDer2;
-    syy = y * imCfDer2;
+    syy = -imCfDer1 + y * reCfDer2;
+    sxy = y * imCfDer2;
     
     cphi0 = cos(phi0);
     sphi0 = sin(phi0);
@@ -70,8 +70,8 @@ function st = st_shear_tensor(x_glob, y_glob, x0, y0, phi0, hl, period)
     imCfDer2 = imag(cfDer2);
 
     sxx = 2*reCfDer1 - y * imCfDer2; 
-    sxy = y * imCfDer2;
-    syy = -imCfDer1 - y * reCfDer2;
+    syy = y * imCfDer2;
+    sxy = -imCfDer1 - y * reCfDer2;
     
     cphi0 = cos(phi0);
     sphi0 = sin(phi0);
