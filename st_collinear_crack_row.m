@@ -89,12 +89,18 @@ function [cfDer1, cfDer2] = complexFunc(x, y, hl, period)
     cosZ = cos(pi/period*z);
     sinHl = sin(pi/period*hl);
 
-    sqrtS = sqrt((sinZ - sinHl)*(sinZ + sinHl));
+    sqrtS = sqrt((sinZ - sinHl).*(sinZ + sinHl));
 
-    sinZbySqrtS = sinZ / sqrtS;
+    xNorm = x / period;
+    xNormInt = fix(xNorm);
+    if((x > 0 && rem(xNormInt, 2) == 1) || (x < 0 && rem(xNormInt, 2) == 0))
+        sqrtS = -sqrtS;
+    end
+
+    sinZbySqrtS = sinZ ./ sqrtS;
 
     cfDer1 = 1i * (1 - sinZbySqrtS);
-    cfDer2 = 1i*pi/period * cosZ/sqrtS * (sinZbySqrtS^2 - 1);
+    cfDer2 = 1i*pi/period * cosZ./sqrtS .* (sinZbySqrtS.^2 - 1);
 
 end
 
