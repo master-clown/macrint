@@ -12,7 +12,7 @@
 %       Angle between the crack's line and axis X.
 %
 %---len:
-%       Length of the crack.
+%       Half-length of the crack.
 %
 %-Tests:
 %   See the function 'test_st_contour()'.
