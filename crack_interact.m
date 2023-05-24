@@ -25,7 +25,9 @@ function [sif_mat, avg_tr] = crack_interact(cc_lst, cp_lst, cl_lst, bst_lst, sif
 %
 %---st_func:
 %       A function which returns a list of handles to two ST functions for
-%       mode 1 and 2
+%       mode 1 and 2 and a handle to a function, which returns two
+%       functions, which evaluate SIFs in positive and negative ends of a
+%       crack and which accept load function and HL as arguments
 %
 %-Returns:
 %---sif_mat:
@@ -42,7 +44,9 @@ function [sif_mat, avg_tr] = crack_interact(cc_lst, cp_lst, cl_lst, bst_lst, sif
 
 %
     
-    [st_func_mode1, st_func_mode2] = st_func();
+    [st_func_mode1, st_func_mode2, sifFuncs] = st_func();
+    [sifPosFunc, sifNegFunc] = sifFuncs();
+    
     [sol_lst, rhs_lst] = find_average_tractions(cc_lst, cp_lst, cl_lst, bst_lst, st_func_mode1, st_func_mode2);
     
     fprintf('%s: Starting evaluation of SIFs...\n', datestr(datetime('now')));
@@ -55,18 +59,15 @@ function [sif_mat, avg_tr] = crack_interact(cc_lst, cp_lst, cl_lst, bst_lst, sif
     % SIFs to get, integrate equations of the system we must
     parfor k = 1:N % parfor
         
-        l = cl_lst(sif_ind_lst(k));
+        hl = cl_lst(sif_ind_lst(k));
         
         for i_rhs = 1:num_rhs
             
-            % for negative and positive ends
-            f_n = @(s) sqrt((l-s)/(l+s)) * eval_crack_traction(s, sif_ind_lst(k), sol_lst, rhs_lst, ...
-                                                               i_rhs, cc_lst, cp_lst, cl_lst, st_func_mode1, st_func_mode2);         
-            f_p = @(s) sqrt((l+s)/(l-s)) * eval_crack_traction(s, sif_ind_lst(k), sol_lst, rhs_lst, ...
-                                                               i_rhs, cc_lst, cp_lst, cl_lst, st_func_mode1, st_func_mode2);         
+            loadFunc = @(s) eval_crack_traction(s, sif_ind_lst(k), sol_lst, rhs_lst, ...
+                                                i_rhs, cc_lst, cp_lst, cl_lst, st_func_mode1, st_func_mode2);
 
-            sif_neg(k, :, i_rhs) = integral(f_n, -l, l, 'ArrayValued', true, 'RelTol',1e-6,'AbsTol',1e-10) / sqrt(pi*l);
-            sif_pos(k, :, i_rhs) = integral(f_p, -l, l, 'ArrayValued', true, 'RelTol',1e-6,'AbsTol',1e-10) / sqrt(pi*l);
+            sif_neg(k, :, i_rhs) = sifNegFunc(loadFunc, hl);
+            sif_pos(k, :, i_rhs) = sifPosFunc(loadFunc, hl);
         end
     end
     

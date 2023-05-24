@@ -18,10 +18,11 @@
 %   See the function 'test_st_contour()'.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [st_func_mode1, st_func_mode2] = st_single_crack()
+function [st_func_mode1, st_func_mode2, sifEvalFuncs] = st_single_crack()
 
     st_func_mode1 = @st_normal_tensor;
     st_func_mode2 = @st_shear_tensor;
+    sifEvalFuncs = @getSifFuncs;
 end
 
 function [x_loc, y_loc] = crack_lc(x, y, x0, y0, phi0)                              % 'crack local coordinates'
@@ -212,4 +213,21 @@ function st = st_shear_tensor(x_glob, y_glob, x0, y0, phi0, len)
     
     st = rot_mat' * [ sxx, sxy;
                       sxy, syy ] * rot_mat;
+end
+
+function [sifPosFunc, sifNegFunc] = getSifFuncs()
+    sifPosFunc = @evalSifPos;
+    sifNegFunc = @evalSifNeg;
+end
+
+function sifPos = evalSifPos(loadFunc, hl)
+    func = @(s) sqrt((hl+s)/(hl-s)) * loadFunc(s);
+
+    sifPos = integral(func, -hl, hl, 'ArrayValued', true, 'RelTol',1e-6,'AbsTol',1e-10) / sqrt(pi*hl);
+end
+
+function sifNeg = evalSifNeg(loadFunc, hl)
+    func = @(s) sqrt((hl-s)/(hl+s)) * loadFunc(s);
+
+    sifNeg = integral(func, -hl, hl, 'ArrayValued', true, 'RelTol',1e-6,'AbsTol',1e-10) / sqrt(pi*hl);
 end

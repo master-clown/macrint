@@ -18,10 +18,11 @@
 %   See the function 'test_st_contour()'.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [st_func_mode1, st_func_mode2] = st_collinear_crack_row(period)
+function [st_func_mode1, st_func_mode2, sifEvalFuncs] = st_collinear_crack_row(period)
 
     st_func_mode1 = @(x_glob, y_glob, x0, y0, phi0, hl) st_normal_tensor(x_glob, y_glob, x0, y0, phi0, hl, period);
     st_func_mode2 = @(x_glob, y_glob, x0, y0, phi0, hl) st_shear_tensor (x_glob, y_glob, x0, y0, phi0, hl, period);
+    sifEvalFuncs = @() getSifFuncs(period);
 end
 
 function [x_loc, y_loc] = crack_lc(x, y, x0, y0, phi0)                              % 'crack local coordinates'
@@ -137,6 +138,39 @@ function val = complexFuncDer2(x, y, hl, period)
     Sder = auxFuncS_Der1(z, hl, period);
     
     val = -1i * (pi/period * cosZ/sqrtS - 1/2 * sinZ * Sder / sqrtS^3);
+end
+
+function [sifPosFunc, sifNegFunc] = getSifFuncs(period)
+    sifPosFunc = @(loadFunc, hl) evalSifPos(loadFunc, hl, period);
+    sifNegFunc = @(loadFunc, hl) evalSifNeg(loadFunc, hl, period);
+end
+
+function sifPos = evalSifPos(loadFunc, hl, period)
+    sinHl = sin(pi*hl/period);
+
+    function val = func(s)
+        sPiByW = s*pi/period;
+        sinS = sin(sPiByW);
+
+        val = loadFunc(s) * cos(sPiByW) * sqrt((sinHl + sinS)/(sinHl - sinS));
+    end
+
+    sifPos = integral(@func, -hl, hl, 'ArrayValued', true, 'RelTol',1e-6,'AbsTol',1e-10) ...
+             * sqrt(period*tan(pi*hl/period)) / period / sinHl;
+end
+
+function sifNeg = evalSifNeg(loadFunc, hl, period)
+    sinHl = sin(pi*hl/period);
+
+    function val = func(s)
+        sPiByW = s*pi/period;
+        sinS = sin(sPiByW);
+
+        val = loadFunc(s) * cos(sPiByW) * sqrt((sinHl - sinS)/(sinHl + sinS));
+    end
+
+    sifNeg = integral(@func, -hl, hl, 'ArrayValued', true, 'RelTol',1e-6,'AbsTol',1e-10) ...
+             * sqrt(period*tan(pi*hl/period)) / period / sinHl;
 end
 
 
