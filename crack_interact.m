@@ -37,7 +37,7 @@ function [sif_mat, avg_tr] = crack_interact(cc_lst, cp_lst, cl_lst, bst_lst, sif
 %       
 %       For i-th crack (i, 1)-th and (i, 2)-th elements are SIF for mode I at 
 %       negative and positive ends (-l and +l) of the crack respectively. 
-%       The (i, 3)-th and (i, 4)-th elements are for mode II in the similiar way.
+%       The (i, 3)-th and (i, 4)-th elements are for mode II in the similar way.
 %
 %---avg_tr:
 %       Average tractions on cracks.
@@ -57,7 +57,7 @@ function [sif_mat, avg_tr] = crack_interact(cc_lst, cp_lst, cl_lst, bst_lst, sif
     sif_pos = zeros(N, 2, num_rhs);
     
     % SIFs to get, integrate equations of the system we must
-    parfor k = 1:N % parfor
+    for k = 1:N % parfor
         
         hl = cl_lst(sif_ind_lst(k));
         
@@ -125,7 +125,7 @@ function [av_tr_lst, rhs] = find_average_tractions(cc_lst, cp_lst, cl_lst, bst_l
         ind_lst = setdiff(1:N, i);
         
         % fill the row of the matrix
-        parfor j = 1:N % parfor
+        for j = 1:N % parfor
         if j ~= i
             x0_j = cc_lst(j, 1);
             y0_j = cc_lst(j, 2);

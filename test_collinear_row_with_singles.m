@@ -1,6 +1,6 @@
 periods = [ 2 ];
-hls = 0.5;
-numCracksVert = 1;
+hls = 0.25;
+numCracksVert = 20;
 vertSpacing = 1;
 bstLst = zeros(2, 2, 3);
     bstLst(2, 2, 1) = 1;
@@ -59,7 +59,7 @@ end
 
 function [sifMat, avgTract] = evaluateUsingSingleCrackSt(period, hl, numCracksVert, vertSpacing, bstLst)
 
-    numHorCracksOneSide = 40; % how many horizontal cracks are added for each crack in the stack from ONE SIDE (i.e. the total number is double plus one)
+    numHorCracksOneSide = 20; % how many horizontal cracks are added for each crack in the stack from ONE SIDE (i.e. the total number is double plus one)
     numHorCracksOneLine = (2*numHorCracksOneSide + 1);
     numCracks = numHorCracksOneLine*numCracksVert;
 
